@@ -128,7 +128,7 @@ const getPageSize = () => {
   pageSize = Math.max(35, itemsInView);
 }
 getPageSize()
-// 直接调用 API 获取知识库文件列表
+// Get knowledge base file list directly via API
 const getTagName = (tagId?: string | number) => {
   if (!tagId && tagId !== 0) return t('knowledgeBase.untagged') || '未分类';
   const key = String(tagId);
@@ -141,7 +141,7 @@ const formatDocTime = (time?: string) => {
   return formatted.slice(2, 16) // "YY-MM-DD HH:mm"
 }
 
-// 获取知识条目的显示类型
+// Get the display type for knowledge entries
 const getKnowledgeType = (item: any) => {
   if (item.type === 'url') {
     return t('knowledgeBase.typeURL') || 'URL';
@@ -482,7 +482,7 @@ watch(tagSearchQuery, (newVal, oldVal) => {
   }, 300);
 });
 
-// 监听文档搜索关键词变化
+// Watch for document search keyword changes
 watch(docSearchKeyword, (newVal, oldVal) => {
   if (newVal === oldVal) return;
   if (docSearchDebounce) {
@@ -496,7 +496,7 @@ watch(docSearchKeyword, (newVal, oldVal) => {
   }, 300);
 });
 
-// 监听文件类型筛选变化
+// Watch for file type filter changes
 watch(selectedFileType, (newVal, oldVal) => {
   if (newVal === oldVal) return;
   if (kbId.value) {
@@ -505,23 +505,23 @@ watch(selectedFileType, (newVal, oldVal) => {
   }
 });
 
-// 监听文件上传事件
+// Watch for file upload events
 const handleFileUploaded = (event: CustomEvent) => {
   const uploadedKbId = event.detail.kbId;
-  console.log('接收到文件上传事件，上传的知识库ID:', uploadedKbId, '当前知识库ID:', kbId.value);
+  console.log('File upload event received, uploaded KB ID:', uploadedKbId, 'current KB ID:', kbId.value);
   if (uploadedKbId && uploadedKbId === kbId.value && !isFAQ.value) {
-    console.log('匹配当前知识库，开始刷新文件列表');
-    // 如果上传的文件属于当前知识库，使用 loadKnowledgeFiles 刷新文件列表
+    console.log('Matches current KB, refreshing file list');
+    // If uploaded file belongs to current KB, refresh file list using loadKnowledgeFiles
     loadKnowledgeFiles(uploadedKbId);
     loadTags(uploadedKbId);
   }
 };
 
 
-// 监听从菜单触发的URL导入事件
+// Watch for URL import events triggered from menu
 const handleOpenURLImportDialog = (event: CustomEvent) => {
   const eventKbId = event.detail.kbId;
-  console.log('接收到URL导入对话框打开事件，知识库ID:', eventKbId, '当前知识库ID:', kbId.value);
+  console.log('URL import dialog open event received, KB ID:', eventKbId, 'current KB ID:', kbId.value);
   if (eventKbId && eventKbId === kbId.value && !isFAQ.value) {
     urlDialogVisible.value = true;
   }
@@ -531,9 +531,9 @@ onMounted(() => {
   loadKnowledgeBaseInfo(kbId.value);
   loadKnowledgeList();
   
-  // 监听文件上传事件
+  // Listen for file upload events
   window.addEventListener('knowledgeFileUploaded', handleFileUploaded as EventListener);
-  // 监听URL导入对话框打开事件
+  // Listen for URL import dialog open events
   window.addEventListener('openURLImportDialog', handleOpenURLImportDialog as EventListener);
 });
 
@@ -585,7 +585,7 @@ const updateStatus = (analyzeList: KnowledgeCard[]) => {
   }
   timeout = setInterval(() => {
     batchQueryKnowledge(query).then((result: any) => {
-      if (result.success && result.data) {
+      if (result?.success === true && Array.isArray(result.data)) {
         pollFailureCount = 0; // Reset failure count on success
         (result.data as KnowledgeCard[]).forEach((item: KnowledgeCard) => {
           const index = cardList.value.findIndex(card => card.id == item.id);
@@ -621,7 +621,7 @@ const updateStatus = (analyzeList: KnowledgeCard[]) => {
 };
 
 
-// 恢复文档处理状态（用于刷新后恢复）
+// Close document details view
 
 const closeDoc = () => {
   isCardDetails.value = false;
@@ -652,7 +652,7 @@ const documentTitle = computed(() => {
 
 const ensureDocumentKbReady = () => {
   if (isFAQ.value) {
-    MessagePlugin.warning('当前知识库类型不支持该操作');
+    MessagePlugin.warning(t('knowledgeBase.docActionUnsupported'));
     return false;
   }
   if (!kbId.value) {
@@ -684,12 +684,12 @@ const handleDocumentUpload = async (event: Event) => {
   if (!files || files.length === 0) return;
   
   if (!kbId.value) {
-    MessagePlugin.error("缺少知识库ID");
+    MessagePlugin.error(t('common.missingKbId'));
     resetUploadInput();
     return;
   }
 
-  // 过滤有效文件
+  // Filter valid files
   const validFiles: File[] = [];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -703,45 +703,45 @@ const handleDocumentUpload = async (event: Event) => {
     return;
   }
 
-  // 批量上传
+  // Helper to extract error message from response or error object
+  const extractErrorMessage = (response: any, defaultMsg: string): string => {
+    if (response?.code === 'duplicate_file' || response?.error?.code === 'duplicate_file') {
+      return t('common.fileExists');
+    }
+    return response?.error?.message || response?.message || defaultMsg;
+  };
+
+  // Batch upload with error tracking
   let successCount = 0;
   let failCount = 0;
   const totalCount = validFiles.length;
+  const failedFiles: Array<{ name: string; reason: string }> = [];
 
   for (const file of validFiles) {
     try {
       const responseData: any = await uploadKnowledgeFile(kbId.value, { file });
-      const isSuccess = responseData?.success || responseData?.code === 200 || responseData?.status === 'success' || (!responseData?.error && responseData);
+      const isSuccess = responseData?.success === true;
       if (isSuccess) {
         successCount++;
       } else {
         failCount++;
-        let errorMessage = "上传失败！";
-        if (responseData?.error?.message) {
-          errorMessage = responseData.error.message;
-        } else if (responseData?.message) {
-          errorMessage = responseData.message;
-        }
-        if (responseData?.code === 'duplicate_file' || responseData?.error?.code === 'duplicate_file') {
-          errorMessage = "文件已存在";
-        }
+        const errorMessage = extractErrorMessage(responseData, t('common.uploadFailed'));
+        failedFiles.push({ name: file.name, reason: errorMessage });
         if (totalCount === 1) {
           MessagePlugin.error(errorMessage);
         }
       }
     } catch (error: any) {
       failCount++;
-      let errorMessage = error?.error?.message || error?.message || "上传失败！";
-      if (error?.code === 'duplicate_file') {
-        errorMessage = "文件已存在";
-      }
+      const errorMessage = extractErrorMessage(error, t('common.uploadFailed'));
+      failedFiles.push({ name: file.name, reason: errorMessage });
       if (totalCount === 1) {
         MessagePlugin.error(errorMessage);
       }
     }
   }
 
-  // 显示上传结果
+  // Display upload results
   if (successCount > 0) {
     window.dispatchEvent(new CustomEvent('knowledgeFileUploaded', {
       detail: { kbId: kbId.value }
@@ -757,6 +757,12 @@ const handleDocumentUpload = async (event: Event) => {
       MessagePlugin.success(t('common.uploadAllSuccess', { count: successCount }));
     } else if (successCount > 0) {
       MessagePlugin.warning(t('common.uploadPartialSuccess', { success: successCount, fail: failCount }));
+      // Show first few failed files in console for debugging
+      if (failedFiles.length > 0) {
+        const failedSummary = failedFiles.slice(0, 3).map(f => f.name).join(', ');
+        const moreCount = failedFiles.length > 3 ? ` (+${failedFiles.length - 3})` : '';
+        console.warn(`Failed uploads: ${failedSummary}${moreCount}`, failedFiles);
+      }
     } else {
       MessagePlugin.error(t('common.uploadAllFailed', { count: failCount }));
     }
@@ -776,7 +782,7 @@ const handleManualCreate = () => {
   });
 };
 
-// URL 导入相关
+// URL import related
 const urlDialogVisible = ref(false);
 const urlInputValue = ref('');
 const urlImporting = ref(false);
@@ -795,50 +801,51 @@ const handleURLImportCancel = () => {
 const handleURLImportConfirm = async () => {
   const url = urlInputValue.value.trim();
   if (!url) {
-    MessagePlugin.warning(t('knowledgeBase.urlRequired') || '请输入URL');
+    MessagePlugin.warning(t('knowledgeBase.urlRequired'));
     return;
   }
-  
-  // 简单的URL格式验证
+
+  // Simple URL format validation
   try {
     new URL(url);
-  } catch (error) {
-    MessagePlugin.warning(t('knowledgeBase.invalidURL') || '请输入有效的URL');
+  } catch (_) {
+    MessagePlugin.warning(t('knowledgeBase.invalidURL'));
     return;
   }
 
   if (!kbId.value) {
-    MessagePlugin.error("缺少知识库ID");
+    MessagePlugin.error(t('common.missingKbId'));
     return;
   }
 
   urlImporting.value = true;
   try {
     const responseData: any = await createKnowledgeFromURL(kbId.value, { url });
-    window.dispatchEvent(new CustomEvent('knowledgeFileUploaded', {
-      detail: { kbId: kbId.value }
-    }));
-    const isSuccess = responseData?.success || responseData?.code === 200 || responseData?.status === 'success' || (!responseData?.error && responseData);
+    const isSuccess = responseData?.success === true;
     if (isSuccess) {
-      MessagePlugin.success(t('knowledgeBase.urlImportSuccess') || 'URL导入成功！');
+      // Only dispatch event after confirming success
+      window.dispatchEvent(new CustomEvent('knowledgeFileUploaded', {
+        detail: { kbId: kbId.value }
+      }));
+      MessagePlugin.success(t('knowledgeBase.urlImportSuccess'));
       urlDialogVisible.value = false;
       urlInputValue.value = '';
     } else {
-      let errorMessage = t('knowledgeBase.urlImportFailed') || "URL导入失败！";
+      let errorMessage = t('knowledgeBase.urlImportFailed');
       if (responseData?.error?.message) {
         errorMessage = responseData.error.message;
       } else if (responseData?.message) {
         errorMessage = responseData.message;
       }
       if (responseData?.code === 'duplicate_url' || responseData?.error?.code === 'duplicate_url') {
-        errorMessage = t('knowledgeBase.urlExists') || "该URL已存在";
+        errorMessage = t('knowledgeBase.urlExists');
       }
       MessagePlugin.error(errorMessage);
     }
   } catch (error: any) {
-    let errorMessage = error?.error?.message || error?.message || t('knowledgeBase.urlImportFailed') || "URL导入失败！";
+    let errorMessage = error?.error?.message || error?.message || t('knowledgeBase.urlImportFailed');
     if (error?.code === 'duplicate_url') {
-      errorMessage = t('knowledgeBase.urlExists') || "该URL已存在";
+      errorMessage = t('knowledgeBase.urlExists');
     }
     MessagePlugin.error(errorMessage);
   } finally {
@@ -913,9 +920,9 @@ const delCardConfirm = () => {
   delKnowledge(knowledgeIndex.value, knowledge.value);
 };
 
-// 处理知识库编辑成功后的回调
+// Handle callback after knowledge base edit success
 const handleKBEditorSuccess = (kbIdValue: string) => {
-  // 如果编辑的是当前知识库，刷新文件列表
+  // If editing current KB, refresh file list
   if (kbIdValue === kbId.value) {
     loadKnowledgeFiles(kbIdValue);
   }
@@ -1915,7 +1922,7 @@ async function createNewSession(value: string): Promise<void> {
   }
 }
 
-// Header 样式
+// Header styles
 .document-header {
   display: flex;
   align-items: center;
