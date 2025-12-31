@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
@@ -38,6 +39,32 @@ func NewTenantHandler(service interfaces.TenantService, userService interfaces.U
 		userService: userService,
 		config:      config,
 	}
+}
+
+// verifyTenantAccess checks if the current user has access to the specified tenant.
+// Returns nil if access is allowed, or an AppError if access is denied.
+// Access is granted if:
+//   - The current tenant ID matches the requested ID, OR
+//   - The user has CanAccessAllTenants permission
+func (h *TenantHandler) verifyTenantAccess(ctx context.Context, requestedID uint64, operation string) *errors.AppError {
+	currentTenant, ok := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
+	if ok && currentTenant != nil && currentTenant.ID == requestedID {
+		return nil // Access granted: same tenant
+	}
+
+	// Check if user has cross-tenant access permission
+	user, userErr := h.userService.GetCurrentUser(ctx)
+	if userErr == nil && user.CanAccessAllTenants {
+		return nil // Access granted: admin with cross-tenant permission
+	}
+
+	// Access denied - log the attempt
+	currentTenantID := uint64(0)
+	if currentTenant != nil {
+		currentTenantID = currentTenant.ID
+	}
+	logger.Warnf(ctx, "Unauthorized tenant %s attempt: requested ID %d, current tenant ID %d", operation, requestedID, currentTenantID)
+	return errors.NewForbiddenError("Access denied: cannot " + operation + " other tenant's data")
 }
 
 // CreateTenant godoc
@@ -115,19 +142,9 @@ func (h *TenantHandler) GetTenant(c *gin.Context) {
 	}
 
 	// IDOR protection: Verify the user has access to the requested tenant
-	currentTenant, ok := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
-	if !ok || currentTenant == nil || currentTenant.ID != id {
-		// Check if user has cross-tenant access permission
-		user, userErr := h.userService.GetCurrentUser(ctx)
-		if userErr != nil || !user.CanAccessAllTenants {
-			currentTenantID := uint64(0)
-			if currentTenant != nil {
-				currentTenantID = currentTenant.ID
-			}
-			logger.Warnf(ctx, "Unauthorized tenant access attempt: requested ID %d, current tenant ID %d", id, currentTenantID)
-			c.Error(errors.NewForbiddenError("Access denied: cannot access other tenant's data"))
-			return
-		}
+	if accessErr := h.verifyTenantAccess(ctx, id, "access"); accessErr != nil {
+		c.Error(accessErr)
+		return
 	}
 
 	tenant, err := h.service.GetTenantByID(ctx, id)
@@ -174,19 +191,9 @@ func (h *TenantHandler) UpdateTenant(c *gin.Context) {
 	}
 
 	// IDOR protection: Verify the user has access to the requested tenant
-	currentTenant, ok := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
-	if !ok || currentTenant == nil || currentTenant.ID != id {
-		// Check if user has cross-tenant access permission
-		user, userErr := h.userService.GetCurrentUser(ctx)
-		if userErr != nil || !user.CanAccessAllTenants {
-			currentTenantID := uint64(0)
-			if currentTenant != nil {
-				currentTenantID = currentTenant.ID
-			}
-			logger.Warnf(ctx, "Unauthorized tenant update attempt: requested ID %d, current tenant ID %d", id, currentTenantID)
-			c.Error(errors.NewForbiddenError("Access denied: cannot modify other tenant's data"))
-			return
-		}
+	if accessErr := h.verifyTenantAccess(ctx, id, "modify"); accessErr != nil {
+		c.Error(accessErr)
+		return
 	}
 
 	var tenantData types.Tenant
@@ -248,19 +255,9 @@ func (h *TenantHandler) DeleteTenant(c *gin.Context) {
 	}
 
 	// IDOR protection: Verify the user has access to the requested tenant
-	currentTenant, ok := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
-	if !ok || currentTenant == nil || currentTenant.ID != id {
-		// Check if user has cross-tenant access permission
-		user, userErr := h.userService.GetCurrentUser(ctx)
-		if userErr != nil || !user.CanAccessAllTenants {
-			currentTenantID := uint64(0)
-			if currentTenant != nil {
-				currentTenantID = currentTenant.ID
-			}
-			logger.Warnf(ctx, "Unauthorized tenant delete attempt: requested ID %d, current tenant ID %d", id, currentTenantID)
-			c.Error(errors.NewForbiddenError("Access denied: cannot delete other tenant's data"))
-			return
-		}
+	if accessErr := h.verifyTenantAccess(ctx, id, "delete"); accessErr != nil {
+		c.Error(accessErr)
+		return
 	}
 
 	logger.Infof(ctx, "Deleting tenant, ID: %d", id)

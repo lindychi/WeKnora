@@ -48,8 +48,16 @@ func initAESKey() {
 	})
 }
 
+// ValidateAESKey validates the AES key configuration and returns an error if invalid.
+// This should be called at application startup to fail fast on misconfiguration.
+func ValidateAESKey() error {
+	initAESKey()
+	return aesKeyError
+}
+
 // apiKeySecret returns the AES key for API key encryption/decryption
-// Panics if the key is not properly configured
+// Panics if the key is not properly configured - call ValidateAESKey() at startup
+// to catch configuration errors early
 var apiKeySecret = func() []byte {
 	initAESKey()
 	if aesKeyError != nil {
@@ -72,8 +80,13 @@ type tenantService struct {
 }
 
 // NewTenantService creates a new tenant service instance
-func NewTenantService(repo interfaces.TenantRepository) interfaces.TenantService {
-	return &tenantService{repo: repo}
+// Returns an error if AES key configuration is invalid
+func NewTenantService(repo interfaces.TenantRepository) (interfaces.TenantService, error) {
+	// Validate AES key at service initialization to fail fast
+	if err := ValidateAESKey(); err != nil {
+		return nil, fmt.Errorf("tenant service initialization failed: %w", err)
+	}
+	return &tenantService{repo: repo}, nil
 }
 
 // CreateTenant creates a new tenant
