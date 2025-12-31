@@ -64,6 +64,7 @@ export default function (knowledgeBaseId?: string) {
       })
       .catch((err) => {
         console.error('Failed to load knowledge files:', err);
+        MessagePlugin.error(t('common.loadFailed'));
       });
   };
   const delKnowledge = (index: number, item: any) => {
@@ -157,6 +158,7 @@ export default function (knowledgeBaseId?: string) {
       })
       .catch((err) => {
         console.error('Failed to load knowledge details:', err);
+        MessagePlugin.error(t('common.loadFailed'));
       });
     getfDetails(item.id, 1);
   };
@@ -176,6 +178,7 @@ export default function (knowledgeBaseId?: string) {
       })
       .catch((err) => {
         console.error('Failed to load knowledge detail content:', err);
+        MessagePlugin.error(t('common.loadFailed'));
       });
   };
   return {

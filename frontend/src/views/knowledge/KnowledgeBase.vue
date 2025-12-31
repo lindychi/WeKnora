@@ -39,6 +39,8 @@ const knowledgeList = ref<Array<{ id: string; name: string; type?: string }>>([]
 let { cardList, total, moreIndex, details, getKnowled, delKnowledge, openMore, onVisibleChange, getCardDetails, getfDetails } = useKnowledgeBase(kbId.value)
 let isCardDetails = ref(false);
 let timeout: ReturnType<typeof setInterval> | null = null;
+let pollFailureCount = 0;
+const MAX_POLL_FAILURES = 5;
 let delDialog = ref(false)
 let knowledge = ref<KnowledgeCard>({ id: '', parse_status: '' })
 let knowledgeIndex = ref(-1)
@@ -562,10 +564,11 @@ const updateStatus = (analyzeList: KnowledgeCard[]) => {
   timeout = setInterval(() => {
     batchQueryKnowledge(query).then((result: any) => {
       if (result.success && result.data) {
+        pollFailureCount = 0; // Reset failure count on success
         (result.data as KnowledgeCard[]).forEach((item: KnowledgeCard) => {
           const index = cardList.value.findIndex(card => card.id == item.id);
           if (index == -1) return;
-          
+
           // Always update the card data
           cardList.value[index].parse_status = item.parse_status;
           cardList.value[index].summary_status = item.summary_status;
@@ -574,6 +577,13 @@ const updateStatus = (analyzeList: KnowledgeCard[]) => {
       }
     }).catch((err) => {
       console.error('Failed to poll document status:', err);
+      pollFailureCount++;
+      if (pollFailureCount >= MAX_POLL_FAILURES && timeout) {
+        clearInterval(timeout);
+        timeout = null;
+        MessagePlugin.warning(t('common.loadFailed'));
+        pollFailureCount = 0;
+      }
     });
   }, 1500);
 };
