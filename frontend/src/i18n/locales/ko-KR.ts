@@ -1005,6 +1005,7 @@ export default {
     missingKbId: "지식베이스 ID가 없습니다",
     unsupportedFileType: "지원하지 않는 파일 형식입니다",
     untitledDocument: "제목 없는 문서",
+    loadFailed: "로드 실패",
   },
   file: {
     upload: "파일 업로드",

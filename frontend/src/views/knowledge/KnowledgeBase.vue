@@ -195,6 +195,11 @@ const loadTags = async (kbIdValue: string, reset = false) => {
       page_size: TAG_PAGE_SIZE,
       keyword: tagSearchQuery.value || undefined,
     });
+    if (!res?.success) {
+      // Non-critical: log warning but don't show error to user
+      console.warn('Failed to load tags:', res?.error || res?.message);
+      return;
+    }
     const pageData = (res?.data || {}) as {
       data?: any[];
       total?: number;
@@ -394,7 +399,14 @@ const loadKnowledgeBaseInfo = async (targetKbId: string) => {
   kbLoading.value = true;
   try {
     const res: any = await getKnowledgeBaseById(targetKbId);
-    kbInfo.value = res?.data || null;
+    if (!res?.success || !res?.data) {
+      // Handle application-level failure
+      console.warn('Failed to load knowledge base info:', res?.error || res?.message);
+      MessagePlugin.error(t('common.loadFailed'));
+      kbInfo.value = null;
+      return;
+    }
+    kbInfo.value = res.data;
     selectedTagId.value = "";
     if (!isFAQ.value) {
       getKnowled({ page: 1, page_size: pageSize, tag_id: undefined }, targetKbId);
@@ -407,6 +419,7 @@ const loadKnowledgeBaseInfo = async (targetKbId: string) => {
     overallKnowledgeTotal.value = total.value;
   } catch (error) {
     console.error('Failed to load knowledge base info:', error);
+    MessagePlugin.error(t('common.loadFailed'));
     kbInfo.value = null;
   } finally {
     kbLoading.value = false;
@@ -416,6 +429,11 @@ const loadKnowledgeBaseInfo = async (targetKbId: string) => {
 const loadKnowledgeList = async () => {
   try {
     const res: any = await listKnowledgeBases();
+    if (!res?.success) {
+      // Non-critical: log warning but don't show error to user
+      console.warn('Failed to load knowledge list:', res?.error || res?.message);
+      return;
+    }
     knowledgeList.value = (res?.data || []).map((item: any) => ({
       id: String(item.id),
       name: item.name,
@@ -917,16 +935,18 @@ const getTitle = (session_id: string, value: string) => {
 };
 
 async function createNewSession(value: string): Promise<void> {
-  // Session 不再和知识库绑定，直接创建 Session
+  // Session is no longer bound to knowledge base, create session directly
   createSessions({}).then(res => {
-    if (res.data && res.data.id) {
+    if (res.success && res.data && res.data.id) {
       getTitle(res.data.id, value);
     } else {
-      // 错误处理
-      console.error(t('knowledgeBase.createSessionFailed'));
+      // Handle application-level failure
+      console.error('Failed to create session:', res?.error || res?.message);
+      MessagePlugin.error(t('common.operationFailed'));
     }
   }).catch(error => {
-    console.error(t('knowledgeBase.createSessionError'), error);
+    console.error('Failed to create session:', error);
+    MessagePlugin.error(t('common.operationFailed'));
   });
 }
 </script>

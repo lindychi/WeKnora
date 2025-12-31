@@ -63,6 +63,7 @@ export default {
     imagesFilteredNoVLM: 'Отфильтровано {count} изображений (VLM не включен)',
     invalidFilesFiltered: 'Отфильтровано {count} неподдерживаемых файлов',
     unsupportedFileType: 'Неподдерживаемый тип файла',
+    loadFailed: 'Загрузка не удалась',
     failedFilesList: 'Неудавшиеся файлы:',
     andMoreFiles: '...и ещё {count} файлов',
     duplicateFilesSkipped: 'Пропущено {count} повторяющихся файлов',

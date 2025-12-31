@@ -65,6 +65,7 @@ export default {
     imagesFilteredNoVLM: 'Filtered {count} image files (VLM not enabled)',
     invalidFilesFiltered: 'Filtered {count} unsupported files',
     unsupportedFileType: 'Unsupported file type',
+    loadFailed: 'Load failed',
     failedFilesList: 'Failed files:',
     andMoreFiles: '...and {count} more files',
     duplicateFilesSkipped: '{count} duplicate files skipped',

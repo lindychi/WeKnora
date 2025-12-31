@@ -64,6 +64,7 @@ export default {
     imagesFilteredNoVLM: "已过滤 {count} 个图片文件(未启用VLM)",
     invalidFilesFiltered: "已过滤 {count} 个不支持的文件",
     unsupportedFileType: "不支持的文件格式",
+    loadFailed: "加载失败",
     failedFilesList: "失败文件列表：",
     andMoreFiles: "...及其他 {count} 个文件",
     duplicateFilesSkipped: "已忽略 {count} 个重复文件",
