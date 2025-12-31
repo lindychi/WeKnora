@@ -2,7 +2,7 @@
 import ManualKnowledgeEditor from '@/components/manual-knowledge-editor.vue'
 </script>
 <template>
-  <div id="app">
+  <div class="app-root">
     <RouterView />
     <ManualKnowledgeEditor />
   </div>
@@ -10,7 +10,8 @@ import ManualKnowledgeEditor from '@/components/manual-knowledge-editor.vue'
 <style>
 body,
 html,
-#app {
+#app,
+.app-root {
     width: 100%;
     height: 100%;
     margin: 0;

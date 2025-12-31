@@ -1,9 +1,17 @@
 <template>
-  <Teleport to="body">
-    <Transition name="modal">
-      <div v-if="visible" class="settings-overlay" @click.self="handleClose">
-        <div class="settings-modal">
-          <!-- 关闭按钮 -->
+  <t-dialog
+    v-model:visible="dialogVisible"
+    :header="false"
+    :footer="false"
+    :closeBtn="false"
+    width="960px"
+    top="3%"
+    class="agent-editor-modal-dialog"
+    attach="body"
+    destroy-on-close
+  >
+    <div class="settings-modal">
+      <!-- 关闭按钮 -->
           <button class="close-btn" @click="handleClose" :aria-label="$t('common.close')">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
               <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -916,10 +924,8 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
+    </div>
+  </t-dialog>
 </template>
 
 <script setup lang="ts">
@@ -951,6 +957,14 @@ const emit = defineEmits<{
   (e: 'update:visible', visible: boolean): void;
   (e: 'success'): void;
 }>();
+
+// Computed property for t-dialog v-model:visible binding
+const dialogVisible = computed({
+  get: () => props.visible,
+  set: (val: boolean) => {
+    emit('update:visible', val);
+  }
+});
 
 const currentSection = ref(props.initialSection || 'basic');
 const saving = ref(false);
