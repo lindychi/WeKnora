@@ -4,11 +4,13 @@
     :header="false"
     :footer="false"
     :closeBtn="false"
-    width="960px"
+    width="90vw"
     top="3%"
     class="agent-editor-modal-dialog"
     attach="body"
     destroy-on-close
+    :close-on-esc-keydown="true"
+    :close-on-overlay-click="false"
   >
     <div class="settings-modal">
       <!-- 关闭按钮 -->
@@ -2395,26 +2397,12 @@ const handleSave = async () => {
 </script>
 
 <style scoped lang="less">
-// 复用创建知识库的样式
-.settings-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
-}
-
+// Agent Editor Modal styles (using TDesign t-dialog)
 .settings-modal {
   position: relative;
-  width: 90vw;
+  width: 100%;
   max-width: 1100px;
-  height: 85vh;
+  height: 80vh;
   max-height: 750px;
   background: #fff;
   border-radius: 12px;
@@ -2681,21 +2669,6 @@ const handleSave = async () => {
   color: #07c05f;
   font-size: 13px;
   line-height: 1.5;
-}
-
-// 过渡动画
-.modal-enter-active,
-.modal-leave-active {
-  transition: all 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-
-  .settings-modal {
-    transform: scale(0.95);
-  }
 }
 
 // Slider 样式
@@ -3171,14 +3144,28 @@ const handleSave = async () => {
 .faq-strategy-section .setting-row {
   padding: 12px 0;
   border-bottom: 1px solid rgba(0, 82, 217, 0.1);
-  
+
   &:last-child {
     border-bottom: none;
     padding-bottom: 0;
   }
-  
+
   &:first-of-type {
     padding-top: 0;
+  }
+}
+</style>
+
+<!-- Global styles for t-dialog (cannot be scoped) -->
+<style lang="less">
+.agent-editor-modal-dialog {
+  .t-dialog__body {
+    padding: 0;
+    overflow: visible;
+  }
+
+  .t-dialog__ctx__wrap {
+    max-width: 1100px;
   }
 }
 </style>
