@@ -574,6 +574,16 @@ const updateStatus = (analyzeList: KnowledgeCard[]) => {
           cardList.value[index].summary_status = item.summary_status;
           cardList.value[index].description = item.description;
         });
+      } else {
+        // Handle application-level failures (result.success === false)
+        console.warn('Batch query returned failure:', result.error || result.message);
+        pollFailureCount++;
+        if (pollFailureCount >= MAX_POLL_FAILURES && timeout) {
+          clearInterval(timeout);
+          timeout = null;
+          MessagePlugin.warning(t('common.loadFailed'));
+          pollFailureCount = 0;
+        }
       }
     }).catch((err) => {
       console.error('Failed to poll document status:', err);

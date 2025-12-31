@@ -79,7 +79,8 @@ export default function (knowledgeBaseId?: string) {
           MessagePlugin.error(t('common.deleteFailed'));
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Failed to delete knowledge:', err);
         MessagePlugin.error(t('common.deleteFailed'));
       });
   };

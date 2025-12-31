@@ -53,8 +53,12 @@ func (h *TenantHandler) verifyTenantAccess(ctx context.Context, requestedID uint
 	}
 
 	// Check if user has cross-tenant access permission
+	// Note: If GetCurrentUser fails, we deny access (fail-closed for security)
 	user, userErr := h.userService.GetCurrentUser(ctx)
-	if userErr == nil && user.CanAccessAllTenants {
+	if userErr != nil {
+		logger.Warnf(ctx, "Failed to get current user for cross-tenant check: %v", userErr)
+	}
+	if userErr == nil && user != nil && user.CanAccessAllTenants {
 		return nil // Access granted: admin with cross-tenant permission
 	}
 

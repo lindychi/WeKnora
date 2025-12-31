@@ -78,9 +78,11 @@ func (pc *PromptsConfig) GetPrompts(lang string) *LocalizedPrompts {
 		}
 	}
 
-	// Fall back to first available
-	for _, prompts := range pc.Prompts {
-		return prompts
+	// Fall back to first available in deterministic order (SupportedLanguages order)
+	for _, supportedLang := range SupportedLanguages {
+		if prompts, ok := pc.Prompts[supportedLang]; ok {
+			return prompts
+		}
 	}
 
 	return nil
