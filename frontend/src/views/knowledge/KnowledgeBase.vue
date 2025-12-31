@@ -572,8 +572,8 @@ const updateStatus = (analyzeList: KnowledgeCard[]) => {
           cardList.value[index].description = item.description;
         });
       }
-    }).catch((_err) => {
-      // 错误处理
+    }).catch((err) => {
+      console.error('Failed to poll document status:', err);
     });
   }, 1500);
 };

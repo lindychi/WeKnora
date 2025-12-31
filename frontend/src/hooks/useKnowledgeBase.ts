@@ -62,7 +62,9 @@ export default function (knowledgeBaseId?: string) {
         }
         total.value = totalResult;
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error('Failed to load knowledge files:', err);
+      });
   };
   const delKnowledge = (index: number, item: any) => {
     cardList.value[index].isMore = false;
@@ -153,7 +155,9 @@ export default function (knowledgeBaseId?: string) {
           });
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error('Failed to load knowledge details:', err);
+      });
     getfDetails(item.id, 1);
   };
   
@@ -170,7 +174,9 @@ export default function (knowledgeBaseId?: string) {
           details.total = totalResult;
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error('Failed to load knowledge detail content:', err);
+      });
   };
   return {
     cardList,
