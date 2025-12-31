@@ -9,14 +9,14 @@
         <div class="info-box">
           <div class="info-header">
             <t-icon name="info-circle" class="info-icon" />
-            <span class="info-title">内置模型</span>
+            <span class="info-title">{{ $t('modelSettings.builtin.title') }}</span>
           </div>
           <div class="info-content">
-            <p>内置模型对所有租户可见，敏感信息会被隐藏，且不可编辑或删除。</p>
+            <p>{{ $t('modelSettings.builtin.description') }}</p>
             <p class="doc-link">
               <t-icon name="link" class="link-icon" />
               <a href="https://github.com/Tencent/WeKnora/blob/main/docs/BUILTIN_MODELS.md" target="_blank" rel="noopener noreferrer">
-                查看内置模型管理指南
+                {{ $t('modelSettings.builtin.guideLink') }}
               </a>
             </p>
           </div>
@@ -44,7 +44,7 @@
           <div class="model-info">
             <div class="model-name">
               {{ model.name }}
-              <t-tag v-if="model.isBuiltin" theme="primary" size="small">内置</t-tag>
+              <t-tag v-if="model.isBuiltin" theme="primary" size="small">{{ $t('modelSettings.builtin.tag') }}</t-tag>
             </div>
             <div class="model-meta">
               <span class="source-tag">{{ model.source === 'local' ? 'Ollama' : $t('modelSettings.source.remote') }}</span>
@@ -93,7 +93,7 @@
           <div class="model-info">
             <div class="model-name">
               {{ model.name }}
-              <t-tag v-if="model.isBuiltin" theme="primary" size="small">内置</t-tag>
+              <t-tag v-if="model.isBuiltin" theme="primary" size="small">{{ $t('modelSettings.builtin.tag') }}</t-tag>
             </div>
             <div class="model-meta">
               <span class="source-tag">{{ model.source === 'local' ? 'Ollama' : $t('modelSettings.source.remote') }}</span>
@@ -143,7 +143,7 @@
           <div class="model-info">
             <div class="model-name">
               {{ model.name }}
-              <t-tag v-if="model.isBuiltin" theme="primary" size="small">内置</t-tag>
+              <t-tag v-if="model.isBuiltin" theme="primary" size="small">{{ $t('modelSettings.builtin.tag') }}</t-tag>
             </div>
             <div class="model-meta">
               <span class="source-tag">{{ model.source === 'local' ? 'Ollama' : $t('modelSettings.source.remote') }}</span>
@@ -192,7 +192,7 @@
           <div class="model-info">
             <div class="model-name">
               {{ model.name }}
-              <t-tag v-if="model.isBuiltin" theme="primary" size="small">内置</t-tag>
+              <t-tag v-if="model.isBuiltin" theme="primary" size="small">{{ $t('modelSettings.builtin.tag') }}</t-tag>
             </div>
             <div class="model-meta">
               <span class="source-tag">{{ model.source === 'local' ? 'Ollama' : $t('modelSettings.source.openaiCompatible') }}</span>
@@ -214,9 +214,9 @@
         </div>
       </div>
       <div v-else class="empty-state">
-        <p class="empty-text">暂无 VLLM 视觉模型</p>
+        <p class="empty-text">{{ $t('modelSettings.vllm.empty') }}</p>
         <t-button theme="default" variant="outline" size="small" @click="openAddDialog('vllm')">
-          添加模型
+          {{ $t('modelSettings.actions.addModel') }}
         </t-button>
       </div>
     </div>
@@ -328,8 +328,8 @@ const loadModels = async () => {
     const models = await listModels()
     allModels.value = models
   } catch (error: any) {
-    console.error('加载模型列表失败:', error)
-    MessagePlugin.error(error.message || '加载模型列表失败')
+    console.error('Failed to load model list:', error)
+    MessagePlugin.error(error.message || t('modelSettings.toasts.loadFailed'))
   } finally {
     loading.value = false
   }
@@ -344,9 +344,9 @@ const openAddDialog = (type: 'chat' | 'embedding' | 'rerank' | 'vllm') => {
 
 // 编辑模型
 const editModel = (type: 'chat' | 'embedding' | 'rerank' | 'vllm', model: any) => {
-  // 内置模型不能编辑
+  // Built-in models cannot be edited
   if (model.isBuiltin) {
-    MessagePlugin.warning('内置模型不能编辑')
+    MessagePlugin.warning(t('modelSettings.toasts.cannotEditBuiltin'))
     return
   }
   currentModelType.value = type
@@ -424,17 +424,17 @@ const handleModelSave = async (modelData: any) => {
     // 重新加载模型列表
     await loadModels()
   } catch (error: any) {
-    console.error('保存模型失败:', error)
+    console.error('Failed to save model:', error)
     MessagePlugin.error(error.message || t('modelSettings.toasts.saveFailed'))
   }
 }
 
 // 删除模型
 const deleteModel = async (type: 'chat' | 'embedding' | 'rerank' | 'vllm', modelId: string) => {
-  // 检查是否是内置模型
+  // Check if it's a built-in model
   const model = allModels.value.find(m => m.id === modelId)
   if (model?.is_builtin) {
-    MessagePlugin.warning('内置模型不能删除')
+    MessagePlugin.warning(t('modelSettings.toasts.cannotDeleteBuiltin'))
     return
   }
   
@@ -444,7 +444,7 @@ const deleteModel = async (type: 'chat' | 'embedding' | 'rerank' | 'vllm', model
     // 重新加载模型列表
     await loadModels()
   } catch (error: any) {
-    console.error('删除模型失败:', error)
+    console.error('Failed to delete model:', error)
     MessagePlugin.error(error.message || t('modelSettings.toasts.deleteFailed'))
   }
 }

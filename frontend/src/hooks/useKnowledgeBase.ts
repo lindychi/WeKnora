@@ -11,10 +11,12 @@ import {
 } from "@/api/knowledge-base/index";
 import { knowledgeStore } from "@/stores/knowledge";
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const usemenuStore = knowledgeStore();
 export default function (knowledgeBaseId?: string) {
   const route = useRoute();
+  const { t } = useI18n();
   const { cardList, total } = storeToRefs(usemenuStore);
   let moreIndex = ref(-1);
   const details = reactive({
@@ -38,7 +40,7 @@ export default function (knowledgeBaseId?: string) {
       .then((result: any) => {
         const { data, total: totalResult } = result;
     const cardList_ = data.map((item: any) => {
-      const rawName = item.file_name || item.title || item.source || '未命名文档'
+      const rawName = item.file_name || item.title || item.source || t('common.untitledDocument')
       const dotIndex = rawName.lastIndexOf('.')
       const displayName = dotIndex > 0 ? rawName.substring(0, dotIndex) : rawName
       const fileTypeSource = item.file_type || (item.type === 'manual' ? 'MANUAL' : '')
@@ -68,14 +70,14 @@ export default function (knowledgeBaseId?: string) {
     delKnowledgeDetails(item.id)
       .then((result: any) => {
         if (result.success) {
-          MessagePlugin.info("知识删除成功！");
+          MessagePlugin.info(t('common.deleteSuccess'));
           getKnowled();
         } else {
-          MessagePlugin.error("知识删除失败！");
+          MessagePlugin.error(t('common.deleteFailed'));
         }
       })
       .catch(() => {
-        MessagePlugin.error("知识删除失败！");
+        MessagePlugin.error(t('common.deleteFailed'));
       });
   };
   const openMore = (index: number) => {
@@ -88,7 +90,7 @@ export default function (knowledgeBaseId?: string) {
   };
   const requestMethod = (file: any, uploadInput: any) => {
     if (!(file instanceof File) || !uploadInput) {
-      MessagePlugin.error("文件类型错误！");
+      MessagePlugin.error(t('common.unsupportedFileType'));
       return;
     }
     
@@ -106,24 +108,24 @@ export default function (knowledgeBaseId?: string) {
       currentKbId = knowledgeBaseId;
     }
     if (!currentKbId) {
-      MessagePlugin.error("缺少知识库ID");
+      MessagePlugin.error(t('common.missingKbId'));
       return;
     }
-    
+
     uploadKnowledgeFile(currentKbId, { file })
       .then((result: any) => {
         if (result.success) {
-          MessagePlugin.info("上传成功！");
+          MessagePlugin.info(t('common.uploadSuccess'));
           getKnowled({ page: 1, page_size: 35 }, currentKbId);
         } else {
-          const errorMessage = result.error?.message || result.message || "上传失败！";
-          MessagePlugin.error(result.code === 'duplicate_file' ? "文件已存在" : errorMessage);
+          const errorMessage = result.error?.message || result.message || t('common.uploadFailed');
+          MessagePlugin.error(result.code === 'duplicate_file' ? t('common.fileExists') : errorMessage);
         }
         uploadInput.value.value = "";
       })
       .catch((err: any) => {
-        const errorMessage = err.error?.message || err.message || "上传失败！";
-        MessagePlugin.error(err.code === 'duplicate_file' ? "文件已存在" : errorMessage);
+        const errorMessage = err.error?.message || err.message || t('common.uploadFailed');
+        MessagePlugin.error(err.code === 'duplicate_file' ? t('common.fileExists') : errorMessage);
         uploadInput.value.value = "";
       });
   };
@@ -142,7 +144,7 @@ export default function (knowledgeBaseId?: string) {
         if (result.success && result.data) {
           const { data } = result;
           Object.assign(details, {
-            title: data.file_name || data.title || data.source || '未命名文档',
+            title: data.file_name || data.title || data.source || t('common.untitledDocument'),
             time: formatStringDate(new Date(data.updated_at)),
             id: data.id,
             type: data.type || 'file',

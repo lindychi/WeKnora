@@ -185,7 +185,8 @@ func (h *Handler) createDefaultSummaryConfig(ctx context.Context) *types.Summary
 	// Try to get tenant from context
 	tenant, _ := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
 
-	// Initialize with config.yaml defaults
+	// Initialize with config.yaml defaults (using localized prompts)
+	defaultLang := h.config.GetDefaultLanguage()
 	cfg := &types.SummaryConfig{
 		MaxTokens:           h.config.Conversation.Summary.MaxTokens,
 		TopP:                h.config.Conversation.Summary.TopP,
@@ -193,7 +194,7 @@ func (h *Handler) createDefaultSummaryConfig(ctx context.Context) *types.Summary
 		FrequencyPenalty:    h.config.Conversation.Summary.FrequencyPenalty,
 		PresencePenalty:     h.config.Conversation.Summary.PresencePenalty,
 		RepeatPenalty:       h.config.Conversation.Summary.RepeatPenalty,
-		Prompt:              h.config.Conversation.Summary.Prompt,
+		Prompt:              h.config.GetSystemPrompt(defaultLang),
 		ContextTemplate:     h.config.Conversation.Summary.ContextTemplate,
 		NoMatchPrefix:       h.config.Conversation.Summary.NoMatchPrefix,
 		Temperature:         h.config.Conversation.Summary.Temperature,
@@ -248,9 +249,9 @@ func (h *Handler) fillSummaryConfigDefaults(ctx context.Context, config *types.S
 		defaultMaxCompletionTokens = tenant.ConversationConfig.MaxCompletionTokens
 	}
 
-	// Fall back to config.yaml if tenant config is empty
+	// Fall back to config.yaml if tenant config is empty (using localized prompts)
 	if defaultPrompt == "" {
-		defaultPrompt = h.config.Conversation.Summary.Prompt
+		defaultPrompt = h.config.GetSystemPrompt(h.config.GetDefaultLanguage())
 	}
 	if defaultContextTemplate == "" {
 		defaultContextTemplate = h.config.Conversation.Summary.ContextTemplate

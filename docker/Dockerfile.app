@@ -84,7 +84,8 @@ COPY --from=builder /app/dataset/samples ./dataset/samples
 COPY --from=builder /app/WeKnora .
 
 # Make scripts executable
-RUN chmod +x ./scripts/*.sh
+RUN chmod +x ./scripts/*.sh && \
+    chown -R appuser:appuser ./config ./scripts ./migrations ./dataset
 
 # Expose ports
 EXPOSE 8080

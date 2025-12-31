@@ -708,15 +708,15 @@ const handleDocumentUpload = async (event: Event) => {
 
   if (totalCount === 1) {
     if (successCount === 1) {
-      MessagePlugin.success("上传成功！");
+      MessagePlugin.success(t('common.uploadSuccess'));
     }
   } else {
     if (failCount === 0) {
-      MessagePlugin.success(`所有文件上传成功（${successCount}个）`);
+      MessagePlugin.success(t('common.uploadAllSuccess', { count: successCount }));
     } else if (successCount > 0) {
-      MessagePlugin.warning(`部分文件上传成功（成功：${successCount}，失败：${failCount}）`);
+      MessagePlugin.warning(t('common.uploadPartialSuccess', { success: successCount, fail: failCount }));
     } else {
-      MessagePlugin.error(`所有文件上传失败（${failCount}个）`);
+      MessagePlugin.error(t('common.uploadAllFailed', { count: failCount }));
     }
   }
 

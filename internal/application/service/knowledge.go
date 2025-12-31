@@ -1507,10 +1507,12 @@ func (s *knowledgeService) getSummary(ctx context.Context,
 
 	// Generate summary using AI model
 	thinking := false
+	// Use localized prompt based on default language setting
+	summaryPrompt := s.config.GetGenerateSummaryPrompt(s.config.GetDefaultLanguage())
 	summary, err := summaryModel.Chat(ctx, []chat.Message{
 		{
 			Role:    "system",
-			Content: s.config.Conversation.GenerateSummaryPrompt,
+			Content: summaryPrompt,
 		},
 		{
 			Role:    "user",

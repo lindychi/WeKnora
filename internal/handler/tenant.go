@@ -114,6 +114,18 @@ func (h *TenantHandler) GetTenant(c *gin.Context) {
 		return
 	}
 
+	// IDOR protection: Verify the user has access to the requested tenant
+	currentTenant := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
+	if currentTenant == nil || currentTenant.ID != id {
+		// Check if user has cross-tenant access permission
+		user, userErr := h.userService.GetCurrentUser(ctx)
+		if userErr != nil || !user.CanAccessAllTenants {
+			logger.Warnf(ctx, "Unauthorized tenant access attempt: requested ID %d, current tenant ID %d", id, currentTenant.ID)
+			c.Error(errors.NewForbiddenError("Access denied: cannot access other tenant's data"))
+			return
+		}
+	}
+
 	tenant, err := h.service.GetTenantByID(ctx, id)
 	if err != nil {
 		// Check if this is an application-specific error
@@ -155,6 +167,18 @@ func (h *TenantHandler) UpdateTenant(c *gin.Context) {
 		logger.Errorf(ctx, "Invalid tenant ID: %s", secutils.SanitizeForLog(c.Param("id")))
 		c.Error(errors.NewBadRequestError("Invalid tenant ID"))
 		return
+	}
+
+	// IDOR protection: Verify the user has access to the requested tenant
+	currentTenant := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
+	if currentTenant == nil || currentTenant.ID != id {
+		// Check if user has cross-tenant access permission
+		user, userErr := h.userService.GetCurrentUser(ctx)
+		if userErr != nil || !user.CanAccessAllTenants {
+			logger.Warnf(ctx, "Unauthorized tenant update attempt: requested ID %d, current tenant ID %d", id, currentTenant.ID)
+			c.Error(errors.NewForbiddenError("Access denied: cannot modify other tenant's data"))
+			return
+		}
 	}
 
 	var tenantData types.Tenant
@@ -213,6 +237,18 @@ func (h *TenantHandler) DeleteTenant(c *gin.Context) {
 		logger.Errorf(ctx, "Invalid tenant ID: %s", secutils.SanitizeForLog(c.Param("id")))
 		c.Error(errors.NewBadRequestError("Invalid tenant ID"))
 		return
+	}
+
+	// IDOR protection: Verify the user has access to the requested tenant
+	currentTenant := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
+	if currentTenant == nil || currentTenant.ID != id {
+		// Check if user has cross-tenant access permission
+		user, userErr := h.userService.GetCurrentUser(ctx)
+		if userErr != nil || !user.CanAccessAllTenants {
+			logger.Warnf(ctx, "Unauthorized tenant delete attempt: requested ID %d, current tenant ID %d", id, currentTenant.ID)
+			c.Error(errors.NewForbiddenError("Access denied: cannot delete other tenant's data"))
+			return
+		}
 	}
 
 	logger.Infof(ctx, "Deleting tenant, ID: %d", id)
@@ -714,8 +750,10 @@ func (h *TenantHandler) GetTenantWebSearchConfig(c *gin.Context) {
 }
 
 func (h *TenantHandler) buildDefaultConversationConfig() *types.ConversationConfig {
+	// Use localized prompts based on default language setting
+	defaultLang := h.config.GetDefaultLanguage()
 	return &types.ConversationConfig{
-		Prompt:               h.config.Conversation.Summary.Prompt,
+		Prompt:               h.config.GetSystemPrompt(defaultLang),
 		ContextTemplate:      h.config.Conversation.Summary.ContextTemplate,
 		Temperature:          h.config.Conversation.Summary.Temperature,
 		MaxCompletionTokens:  h.config.Conversation.Summary.MaxCompletionTokens,
@@ -728,10 +766,10 @@ func (h *TenantHandler) buildDefaultConversationConfig() *types.ConversationConf
 		EnableRewrite:        h.config.Conversation.EnableRewrite,
 		EnableQueryExpansion: h.config.Conversation.EnableQueryExpansion,
 		FallbackStrategy:     h.config.Conversation.FallbackStrategy,
-		FallbackResponse:     h.config.Conversation.FallbackResponse,
-		FallbackPrompt:       h.config.Conversation.FallbackPrompt,
-		RewritePromptUser:    h.config.Conversation.RewritePromptUser,
-		RewritePromptSystem:  h.config.Conversation.RewritePromptSystem,
+		FallbackResponse:     h.config.GetFallbackResponse(defaultLang),
+		FallbackPrompt:       h.config.GetFallbackPrompt(defaultLang),
+		RewritePromptUser:    h.config.GetRewriteUserPrompt(defaultLang),
+		RewritePromptSystem:  h.config.GetRewriteSystemPrompt(defaultLang),
 	}
 }
 

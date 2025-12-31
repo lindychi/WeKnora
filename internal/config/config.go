@@ -27,6 +27,8 @@ type Config struct {
 	ExtractManager  *ExtractManagerConfig  `yaml:"extract"          json:"extract"`
 	WebSearch       *WebSearchConfig       `yaml:"web_search"       json:"web_search"`
 	PromptTemplates *PromptTemplatesConfig `yaml:"prompt_templates" json:"prompt_templates"`
+	// LocalizedPrompts contains language-specific prompts loaded from config/prompts/
+	LocalizedPrompts *PromptsConfig `yaml:"-" json:"-"`
 }
 
 type DocReaderConfig struct {
@@ -225,7 +227,29 @@ func LoadConfig() (*Config, error) {
 		cfg.PromptTemplates = promptTemplates
 	}
 
+	// 加载多语言提示词（从config/prompts/目录）
+	localizedPrompts, err := loadLocalizedPrompts(configDir)
+	if err != nil {
+		fmt.Printf("Warning: failed to load localized prompts: %v\n", err)
+	} else if localizedPrompts != nil {
+		cfg.LocalizedPrompts = localizedPrompts
+		fmt.Printf("Loaded localized prompts for languages: %v (default: %s)\n",
+			getLoadedLanguages(localizedPrompts), localizedPrompts.DefaultLanguage)
+	}
+
 	return &cfg, nil
+}
+
+// getLoadedLanguages returns a list of loaded language codes
+func getLoadedLanguages(pc *PromptsConfig) []string {
+	if pc == nil || pc.Prompts == nil {
+		return nil
+	}
+	languages := make([]string, 0, len(pc.Prompts))
+	for lang := range pc.Prompts {
+		languages = append(languages, lang)
+	}
+	return languages
 }
 
 // promptTemplateFile 用于解析模板文件

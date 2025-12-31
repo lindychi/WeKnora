@@ -8,9 +8,11 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Tencent/WeKnora/internal/logger"
@@ -18,8 +20,42 @@ import (
 	"github.com/Tencent/WeKnora/internal/types/interfaces"
 )
 
+var (
+	aesKeyOnce   sync.Once
+	aesKeySecret []byte
+	aesKeyError  error
+)
+
+// initAESKey initializes and validates the AES key from environment variable
+func initAESKey() {
+	aesKeyOnce.Do(func() {
+		key := os.Getenv("TENANT_AES_KEY")
+		if key == "" {
+			aesKeyError = errors.New("TENANT_AES_KEY environment variable is required but not set")
+			return
+		}
+
+		keyBytes := []byte(key)
+		keyLen := len(keyBytes)
+
+		// AES requires key length of 16, 24, or 32 bytes
+		if keyLen != 16 && keyLen != 24 && keyLen != 32 {
+			aesKeyError = fmt.Errorf("TENANT_AES_KEY must be 16, 24, or 32 bytes long, got %d bytes", keyLen)
+			return
+		}
+
+		aesKeySecret = keyBytes
+	})
+}
+
+// apiKeySecret returns the AES key for API key encryption/decryption
+// Panics if the key is not properly configured
 var apiKeySecret = func() []byte {
-	return []byte(os.Getenv("TENANT_AES_KEY"))
+	initAESKey()
+	if aesKeyError != nil {
+		panic("AES key configuration error: " + aesKeyError.Error())
+	}
+	return aesKeySecret
 }
 
 // ListTenantsParams defines parameters for listing tenants with filtering and pagination

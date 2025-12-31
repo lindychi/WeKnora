@@ -1,0 +1,5 @@
+# Default language configuration for WeKnora prompts
+# 기본 언어 설정
+
+# Available options: ko-KR, en-US, zh-CN
+default_language: ko-KR

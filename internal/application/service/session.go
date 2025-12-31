@@ -437,13 +437,15 @@ func (s *sessionService) KnowledgeQA(
 	maxRounds := s.cfg.Conversation.MaxRounds
 	fallbackStrategy := types.FallbackStrategy(s.cfg.Conversation.FallbackStrategy)
 	fallbackResponse := s.cfg.Conversation.FallbackResponse
-	fallbackPrompt := s.cfg.Conversation.FallbackPrompt
+	// Use localized prompts based on default language setting
+	defaultLang := s.cfg.GetDefaultLanguage()
+	fallbackPrompt := s.cfg.GetFallbackPrompt(defaultLang)
 	enableRewrite := s.cfg.Conversation.EnableRewrite
 	enableQueryExpansion := s.cfg.Conversation.EnableQueryExpansion
 	rerankModelID := ""
 
 	summaryConfig := types.SummaryConfig{
-		Prompt:              s.cfg.Conversation.Summary.Prompt,
+		Prompt:              s.cfg.GetSystemPrompt(defaultLang),
 		ContextTemplate:     s.cfg.Conversation.Summary.ContextTemplate,
 		Temperature:         s.cfg.Conversation.Summary.Temperature,
 		NoMatchPrefix:       s.cfg.Conversation.Summary.NoMatchPrefix,

@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: wechatopenai/weknora-ui:latest
+    # image: wechatopenai/weknora-ui:latest  # 로컬 빌드 사용
     build: ./frontend
     container_name: WeKnora-frontend
     ports:
@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   app:
-    image: wechatopenai/weknora-app:latest
+    # image: wechatopenai/weknora-app:latest  # 로컬 빌드 사용
     build:
       context: .
       dockerfile: docker/Dockerfile.app
@@ -68,8 +68,8 @@ services:
       - LOCAL_STORAGE_BASE_DIR=${LOCAL_STORAGE_BASE_DIR:-}
       - AUTO_RECOVER_DIRTY=${AUTO_RECOVER_DIRTY:-true}
       - MINIO_ENDPOINT=minio:9000
-      - MINIO_ACCESS_KEY_ID=${MINIO_ACCESS_KEY_ID:-minioadmin}
-      - MINIO_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY:-minioadmin}
+      - MINIO_ACCESS_KEY_ID=${MINIO_ACCESS_KEY_ID:-}
+      - MINIO_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY:-}
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       - STREAM_MANAGER_TYPE=${STREAM_MANAGER_TYPE:-}
@@ -81,7 +81,7 @@ services:
       - NEO4J_ENABLE=${NEO4J_ENABLE:-}
       - NEO4J_URI=bolt://neo4j:7687
       - NEO4J_USERNAME=${NEO4J_USERNAME:-neo4j}
-      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-password}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-}
       - TENANT_AES_KEY=${TENANT_AES_KEY:-}
       - CONCURRENCY_POOL_SIZE=${CONCURRENCY_POOL_SIZE:-5}
       - JWT_SECRET=${JWT_SECRET:-}
@@ -110,7 +110,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   docreader:
-    image: wechatopenai/weknora-docreader:latest
+    # image: wechatopenai/weknora-docreader:latest  # 로컬 빌드 사용
     build:
       context: .
       dockerfile: docker/Dockerfile.docreader
@@ -131,8 +131,8 @@ services:
       - STORAGE_TYPE=${STORAGE_TYPE:-}
       - MINIO_PUBLIC_ENDPOINT=http://localhost:${MINIO_PORT:-9000}
       - MINIO_ENDPOINT=minio:9000
-      - MINIO_ACCESS_KEY_ID=${MINIO_ACCESS_KEY_ID:-minioadmin}
-      - MINIO_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY:-minioadmin}
+      - MINIO_ACCESS_KEY_ID=${MINIO_ACCESS_KEY_ID:-}
+      - MINIO_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY:-}
       - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME:-}
       - MINIO_USE_SSL=${MINIO_USE_SSL:-}
       - WEB_PROXY=${WEB_PROXY:-}
@@ -186,8 +186,8 @@ services:
       - "${MINIO_PORT:-9000}:9000"
       - "${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
-      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY_ID:-minioadmin}
-      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_ACCESS_KEY:-minioadmin}
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY_ID:-}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_ACCESS_KEY:-}
     command: server --console-address ":9001" /data
     volumes:
       - minio_data:/data
@@ -233,7 +233,7 @@ services:
     volumes:
       - neo4j-data:/data
     environment:
-      - NEO4J_AUTH=${NEO4J_USERNAME:-neo4j}/${NEO4J_PASSWORD:-password}
+      - NEO4J_AUTH=${NEO4J_USERNAME:-neo4j}/${NEO4J_PASSWORD:-}
       - NEO4J_apoc_export_file_enabled=true
       - NEO4J_apoc_import_file_enabled=true
       - NEO4J_apoc_import_file_use__neo4j__config=true
