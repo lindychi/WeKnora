@@ -46,14 +46,14 @@
                 <div v-show="currentSection === 'basic'" class="section">
                   <div class="section-header">
                     <h2>{{ $t('agent.editor.basicInfo') }}</h2>
-                    <p class="section-description">{{ $t('agent.editor.basicInfoDesc') || '配置智能体的基本信息' }}</p>
+                    <p class="section-description">{{ $t('agent.editor.basicInfoDesc') }}</p>
                   </div>
                   
                   <div class="settings-group">
                     <!-- 内置智能体提示 -->
                     <div v-if="isBuiltinAgent" class="builtin-agent-notice">
                       <t-icon name="info-circle" />
-                      <span>这是内置智能体，名称和描述不可修改，但可以调整配置参数</span>
+                      <span>{{ $t('agent.editor.hints.builtinAgentNotice') }}</span>
                     </div>
 
                     <!-- 运行模式（首先选择） -->
@@ -78,7 +78,7 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.name') }} <span v-if="!isBuiltinAgent" class="required">*</span></label>
-                        <p class="desc">为智能体设置一个易于识别的名称</p>
+                        <p class="desc">{{ $t('agent.editor.hints.nameDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <div class="name-input-wrapper">
@@ -102,7 +102,7 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.description') }}</label>
-                        <p class="desc">简要描述智能体的用途和特点</p>
+                        <p class="desc">{{ $t('agent.editor.hints.descriptionDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-textarea 
@@ -118,22 +118,22 @@
                     <div class="setting-row setting-row-vertical">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.systemPrompt') }} <span v-if="!isBuiltinAgent" class="required">*</span></label>
-                        <p class="desc">自定义系统提示词，定义智能体的行为和角色{{ isBuiltinAgent ? '（留空则使用系统默认）' : '' }}</p>
+                        <p class="desc">{{ $t('agent.editor.hints.systemPromptDesc') }}{{ isBuiltinAgent ? $t('agent.editor.hints.systemPromptBuiltinSuffix') : '' }}</p>
                         <div class="placeholder-tags">
-                          <span class="placeholder-label">可用变量：</span>
-                          <t-tooltip 
-                            v-for="placeholder in availablePlaceholders" 
+                          <span class="placeholder-label">{{ $t('agent.editor.hints.availableVariables') }}</span>
+                          <t-tooltip
+                            v-for="placeholder in availablePlaceholders"
                             :key="placeholder.name"
-                            :content="placeholder.description + '（点击插入）'"
+                            :content="placeholder.description + $t('agent.editor.hints.clickToInsert')"
                             placement="top"
                           >
-                            <span 
+                            <span
                               class="placeholder-tag"
                               @click="handlePlaceholderClick('system', placeholder.name)"
                               v-text="'{{' + placeholder.name + '}}'"
                             ></span>
                           </t-tooltip>
-                          <span class="placeholder-hint" v-text="'（点击插入，或输入 {{ 唤起列表）'"></span>
+                          <span class="placeholder-hint">{{ $t('agent.editor.hints.clickToInsertHint') }}</span>
                         </div>
                       </div>
                       <div class="setting-control setting-control-full" style="position: relative;">
@@ -201,23 +201,23 @@
                     <!-- 上下文模板（仅普通模式） -->
                     <div v-if="!isAgentMode" class="setting-row setting-row-vertical">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.contextTemplate') || '上下文模板' }} <span v-if="!isBuiltinAgent" class="required">*</span></label>
-                        <p class="desc">定义如何将检索到的内容格式化后传递给模型{{ isBuiltinAgent ? '（留空则使用系统默认）' : '' }}</p>
+                        <label>{{ $t('agent.editor.contextTemplate') }} <span v-if="!isBuiltinAgent" class="required">*</span></label>
+                        <p class="desc">{{ $t('agent.editor.hints.contextTemplateDesc') }}{{ isBuiltinAgent ? $t('agent.editor.hints.systemPromptBuiltinSuffix') : '' }}</p>
                         <div class="placeholder-tags">
-                          <span class="placeholder-label">可用变量：</span>
-                          <t-tooltip 
-                            v-for="placeholder in contextTemplatePlaceholders" 
+                          <span class="placeholder-label">{{ $t('agent.editor.hints.availableVariables') }}</span>
+                          <t-tooltip
+                            v-for="placeholder in contextTemplatePlaceholders"
                             :key="placeholder.name"
-                            :content="placeholder.description + '（点击插入）'"
+                            :content="placeholder.description + $t('agent.editor.hints.clickToInsert')"
                             placement="top"
                           >
-                            <span 
+                            <span
                               class="placeholder-tag"
                               @click="handlePlaceholderClick('context', placeholder.name)"
                               v-text="'{{' + placeholder.name + '}}'"
                             ></span>
                           </t-tooltip>
-                          <span class="placeholder-hint" v-text="'（点击插入，或输入 {{ 唤起列表）'"></span>
+                          <span class="placeholder-hint">{{ $t('agent.editor.hints.clickToInsertHint') }}</span>
                         </div>
                       </div>
                       <div class="setting-control setting-control-full" style="position: relative;">
@@ -271,7 +271,7 @@
                 <div v-show="currentSection === 'model'" class="section">
                   <div class="section-header">
                     <h2>{{ $t('agent.editor.modelConfig') }}</h2>
-                    <p class="section-description">{{ $t('agent.editor.modelConfigDesc') || '配置智能体的模型参数' }}</p>
+                    <p class="section-description">{{ $t('agent.editor.modelConfigDesc') }}</p>
                   </div>
                   
                   <div class="settings-group">
@@ -279,7 +279,7 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.model') }} <span class="required">*</span></label>
-                        <p class="desc">选择智能体使用的大语言模型</p>
+                        <p class="desc">{{ $t('agent.editor.hints.modelDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <ModelSelector
@@ -297,7 +297,7 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.temperature') }}</label>
-                        <p class="desc">控制输出的随机性，0 最确定，1 最随机</p>
+                        <p class="desc">{{ $t('agent.editor.hints.temperatureDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <div class="slider-wrapper">
@@ -310,8 +310,8 @@
                     <!-- 最大生成Token数（仅普通模式） -->
                     <div v-if="!isAgentMode" class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.maxCompletionTokens') || '最大生成Token数' }}</label>
-                        <p class="desc">模型生成回复的最大Token数量</p>
+                        <label>{{ $t('agent.editor.maxCompletionTokens') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.maxCompletionTokensDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-input-number v-model="formData.config.max_completion_tokens" :min="100" :max="100000" :step="100" theme="column" />
@@ -323,8 +323,8 @@
                 <!-- 多轮对话（仅普通模式显示，Agent模式内部自动控制） -->
                 <div v-show="currentSection === 'conversation' && !isAgentMode" class="section">
                   <div class="section-header">
-                    <h2>{{ $t('agent.editor.conversationSettings') || '多轮对话' }}</h2>
-                    <p class="section-description">配置多轮对话和问题改写相关参数</p>
+                    <h2>{{ $t('agent.editor.conversationSettings') }}</h2>
+                    <p class="section-description">{{ $t('agent.editor.hints.conversationSettingsDesc') }}</p>
                   </div>
                   
                   <div class="settings-group">
@@ -332,7 +332,7 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.multiTurn') }}</label>
-                        <p class="desc">开启后将保留历史对话上下文</p>
+                        <p class="desc">{{ $t('agent.editor.hints.multiTurnDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-switch v-model="formData.config.multi_turn_enabled" />
@@ -343,7 +343,7 @@
                     <div v-if="formData.config.multi_turn_enabled" class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.historyTurns') }}</label>
-                        <p class="desc">保留最近几轮对话作为上下文</p>
+                        <p class="desc">{{ $t('agent.editor.hints.historyTurnsDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-input-number v-model="formData.config.history_turns" :min="1" :max="20" theme="column" />
@@ -353,8 +353,8 @@
                     <!-- 问题改写（仅多轮对话开启且普通模式时显示） -->
                     <div v-if="formData.config.multi_turn_enabled && !isAgentMode" class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.enableRewrite') || '问题改写' }}</label>
-                        <p class="desc">多轮对话时自动改写用户问题，消解指代和补全省略</p>
+                        <label>{{ $t('agent.editor.enableRewrite') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.enableRewriteDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-switch v-model="formData.config.enable_rewrite" />
@@ -364,23 +364,23 @@
                     <!-- 改写系统提示词 -->
                     <div v-if="formData.config.multi_turn_enabled && !isAgentMode && formData.config.enable_rewrite" class="setting-row setting-row-vertical">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.rewritePromptSystem') || '改写系统提示词' }}</label>
-                        <p class="desc">用于问题改写的系统提示词（留空使用默认）</p>
+                        <label>{{ $t('agent.editor.rewritePromptSystem') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.rewritePromptSystemDesc') }}</p>
                         <div class="placeholder-tags" v-if="rewriteSystemPlaceholders.length > 0">
-                          <span class="placeholder-label">可用变量：</span>
-                          <t-tooltip 
-                            v-for="placeholder in rewriteSystemPlaceholders" 
+                          <span class="placeholder-label">{{ $t('agent.editor.hints.availableVariables') }}</span>
+                          <t-tooltip
+                            v-for="placeholder in rewriteSystemPlaceholders"
                             :key="placeholder.name"
-                            :content="placeholder.description + '（点击插入）'"
+                            :content="placeholder.description + $t('agent.editor.hints.clickToInsert')"
                             placement="top"
                           >
-                            <span 
+                            <span
                               class="placeholder-tag"
                               @click="handlePlaceholderClick('rewriteSystem', placeholder.name)"
                               v-text="'{{' + placeholder.name + '}}'"
                             ></span>
                           </t-tooltip>
-                          <span class="placeholder-hint" v-text="'（点击插入，或输入 {{ 唤起列表）'"></span>
+                          <span class="placeholder-hint">{{ $t('agent.editor.hints.clickToInsertHint') }}</span>
                         </div>
                       </div>
                       <div class="setting-control setting-control-full" style="position: relative;">
@@ -388,7 +388,7 @@
                           <t-textarea 
                             ref="rewriteSystemTextareaRef"
                             v-model="formData.config.rewrite_prompt_system" 
-                            :placeholder="defaultRewritePromptSystem || $t('agent.editor.rewritePromptSystemPlaceholder') || '留空使用系统默认提示词'"
+                            :placeholder="defaultRewritePromptSystem || $t('agent.editor.rewritePromptSystemPlaceholder')"
                             :autosize="{ minRows: 4, maxRows: 10 }"
                             @input="handleRewriteSystemInput"
                           />
@@ -427,23 +427,23 @@
                     <!-- 改写用户提示词 -->
                     <div v-if="formData.config.multi_turn_enabled && !isAgentMode && formData.config.enable_rewrite" class="setting-row setting-row-vertical">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.rewritePromptUser') || '改写用户提示词' }}</label>
-                        <p class="desc">用于问题改写的用户提示词模板（留空使用默认）</p>
+                        <label>{{ $t('agent.editor.rewritePromptUser') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.rewritePromptUserDesc') }}</p>
                         <div class="placeholder-tags" v-if="rewritePlaceholders.length > 0">
-                          <span class="placeholder-label">可用变量：</span>
-                          <t-tooltip 
-                            v-for="placeholder in rewritePlaceholders" 
+                          <span class="placeholder-label">{{ $t('agent.editor.hints.availableVariables') }}</span>
+                          <t-tooltip
+                            v-for="placeholder in rewritePlaceholders"
                             :key="placeholder.name"
-                            :content="placeholder.description + '（点击插入）'"
+                            :content="placeholder.description + $t('agent.editor.hints.clickToInsert')"
                             placement="top"
                           >
-                            <span 
+                            <span
                               class="placeholder-tag"
                               @click="handlePlaceholderClick('rewriteUser', placeholder.name)"
                               v-text="'{{' + placeholder.name + '}}'"
                             ></span>
                           </t-tooltip>
-                          <span class="placeholder-hint" v-text="'（点击插入，或输入 {{ 唤起列表）'"></span>
+                          <span class="placeholder-hint">{{ $t('agent.editor.hints.clickToInsertHint') }}</span>
                         </div>
                       </div>
                       <div class="setting-control setting-control-full" style="position: relative;">
@@ -451,7 +451,7 @@
                           <t-textarea 
                             ref="rewriteUserTextareaRef"
                             v-model="formData.config.rewrite_prompt_user" 
-                            :placeholder="defaultRewritePromptUser || $t('agent.editor.rewritePromptUserPlaceholder') || '留空使用系统默认提示词'"
+                            :placeholder="defaultRewritePromptUser || $t('agent.editor.rewritePromptUserPlaceholder')"
                             :autosize="{ minRows: 4, maxRows: 10 }"
                             @input="handleRewriteUserInput"
                           />
@@ -492,8 +492,8 @@
                 <!-- 工具配置（仅 Agent 模式） -->
                 <div v-show="currentSection === 'tools' && isAgentMode" class="section">
                   <div class="section-header">
-                    <h2>{{ $t('agent.editor.toolsConfig') || '工具配置' }}</h2>
-                    <p class="section-description">{{ $t('agent.editor.toolsConfigDesc') || '配置 Agent 可以使用的工具' }}</p>
+                    <h2>{{ $t('agent.editor.toolsConfig') }}</h2>
+                    <p class="section-description">{{ $t('agent.editor.toolsConfigDesc') }}</p>
                   </div>
                   
                   <div class="settings-group">
@@ -501,7 +501,7 @@
                     <div class="setting-row setting-row-vertical">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.allowedTools') }}</label>
-                        <p class="desc">选择 Agent 可以使用的工具</p>
+                        <p class="desc">{{ $t('agent.editor.hints.allowedToolsDesc') }}</p>
                       </div>
                       <div class="setting-control setting-control-full">
                         <t-checkbox-group v-model="formData.config.allowed_tools" class="tools-checkbox-group">
@@ -515,7 +515,7 @@
                             <div class="tool-item-content">
                               <span class="tool-name">{{ tool.label }}</span>
                               <span v-if="tool.description" class="tool-desc">{{ tool.description }}</span>
-                              <span v-if="tool.disabled" class="tool-disabled-hint">（需要配置知识库）</span>
+                              <span v-if="tool.disabled" class="tool-disabled-hint">{{ $t('agent.editor.hints.requiresKb') }}</span>
                             </div>
                           </t-checkbox>
                         </t-checkbox-group>
@@ -526,7 +526,7 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.maxIterations') }}</label>
-                        <p class="desc">Agent 执行任务时的最大推理步骤数</p>
+                        <p class="desc">{{ $t('agent.editor.hints.maxIterationsDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-input-number v-model="formData.config.max_iterations" :min="1" :max="50" theme="column" />
@@ -536,14 +536,14 @@
                     <!-- MCP 服务选择 -->
                     <div class="setting-row">
                       <div class="setting-info">
-                        <label>MCP 服务</label>
-                        <p class="desc">选择 Agent 可以调用的 MCP 服务</p>
+                        <label>{{ $t('agent.editor.hints.mcpServiceLabel') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.mcpServiceDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-radio-group v-model="mcpSelectionMode">
-                          <t-radio-button value="all">全部</t-radio-button>
-                          <t-radio-button value="selected">指定</t-radio-button>
-                          <t-radio-button value="none">禁用</t-radio-button>
+                          <t-radio-button value="all">{{ $t('agent.editor.hints.all') }}</t-radio-button>
+                          <t-radio-button value="selected">{{ $t('agent.editor.hints.selected') }}</t-radio-button>
+                          <t-radio-button value="none">{{ $t('agent.editor.hints.none') }}</t-radio-button>
                         </t-radio-group>
                       </div>
                     </div>
@@ -551,14 +551,14 @@
                     <!-- 选择指定 MCP 服务 -->
                     <div v-if="mcpSelectionMode === 'selected' && mcpOptions.length > 0" class="setting-row">
                       <div class="setting-info">
-                        <label>选择 MCP 服务</label>
-                        <p class="desc">选择要启用的 MCP 服务</p>
+                        <label>{{ $t('agent.editor.hints.selectMcpService') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.selectMcpServiceDesc') }}</p>
                       </div>
                       <div class="setting-control">
-                        <t-select 
-                          v-model="formData.config.mcp_services" 
-                          multiple 
-                          placeholder="选择 MCP 服务"
+                        <t-select
+                          v-model="formData.config.mcp_services"
+                          multiple
+                          :placeholder="$t('agent.editor.hints.selectMcpServicePlaceholder')"
                           filterable
                         >
                           <t-option 
@@ -576,8 +576,8 @@
                 <!-- 知识库配置 -->
                 <div v-show="currentSection === 'knowledge'" class="section">
                   <div class="section-header">
-                    <h2>{{ $t('agent.editor.knowledgeConfig') || '知识库' }}</h2>
-                    <p class="section-description">{{ $t('agent.editor.knowledgeConfigDesc') || '配置智能体可访问的知识库' }}</p>
+                    <h2>{{ $t('agent.editor.knowledgeConfig') }}</h2>
+                    <p class="section-description">{{ $t('agent.editor.knowledgeConfigDesc') }}</p>
                   </div>
                   
                   <div class="settings-group">
@@ -585,13 +585,13 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.knowledgeBases') }}</label>
-                        <p class="desc">选择智能体可访问的知识库范围</p>
+                        <p class="desc">{{ $t('agent.editor.hints.kbRangeDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-radio-group v-model="kbSelectionMode">
-                          <t-radio-button value="all">{{ $t('agent.editor.allKnowledgeBases') || '全部' }}</t-radio-button>
-                          <t-radio-button value="selected">{{ $t('agent.editor.selectedKnowledgeBases') || '指定' }}</t-radio-button>
-                          <t-radio-button value="none">{{ $t('agent.editor.noKnowledgeBase') || '禁用' }}</t-radio-button>
+                          <t-radio-button value="all">{{ $t('agent.editor.allKnowledgeBases') }}</t-radio-button>
+                          <t-radio-button value="selected">{{ $t('agent.editor.selectedKnowledgeBases') }}</t-radio-button>
+                          <t-radio-button value="none">{{ $t('agent.editor.noKnowledgeBase') }}</t-radio-button>
                         </t-radio-group>
                       </div>
                     </div>
@@ -600,7 +600,7 @@
                     <div v-if="kbSelectionMode === 'selected'" class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.selectKnowledgeBases') }}</label>
-                        <p class="desc">选择要关联的知识库</p>
+                        <p class="desc">{{ $t('agent.editor.hints.selectKbDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-select 
@@ -649,8 +649,8 @@
                     <div v-if="hasFaqKnowledgeBase" class="faq-strategy-section">
                       <div class="faq-strategy-header">
                         <t-icon name="chat-bubble-help" class="faq-icon" />
-                        <span>FAQ 优先策略</span>
-                        <t-tooltip content="当知识库中包含 FAQ（问答对）时，可以启用此策略让 FAQ 答案优先于普通文档">
+                        <span>{{ $t('agent.editor.hints.faqPriorityStrategy') }}</span>
+                        <t-tooltip :content="$t('agent.editor.hints.faqPriorityTooltip')">
                           <t-icon name="help-circle" class="help-icon" />
                         </t-tooltip>
                       </div>
@@ -658,8 +658,8 @@
                       <!-- FAQ 优先开关 -->
                       <div class="setting-row">
                         <div class="setting-info">
-                          <label>启用 FAQ 优先</label>
-                          <p class="desc">FAQ 答案将优先于普通文档被引用，提高回答准确性</p>
+                          <label>{{ $t('agent.editor.hints.enableFaqPriority') }}</label>
+                          <p class="desc">{{ $t('agent.editor.hints.enableFaqPriorityDesc') }}</p>
                         </div>
                         <div class="setting-control">
                           <t-switch v-model="formData.config.faq_priority_enabled" />
@@ -669,8 +669,8 @@
                       <!-- FAQ 直接回答阈值 -->
                       <div v-if="formData.config.faq_priority_enabled" class="setting-row">
                         <div class="setting-info">
-                          <label>直接回答阈值</label>
-                          <p class="desc">当问题与 FAQ 相似度超过此值时，直接使用 FAQ 答案</p>
+                          <label>{{ $t('agent.editor.hints.directAnswerThreshold') }}</label>
+                          <p class="desc">{{ $t('agent.editor.hints.directAnswerThresholdDesc') }}</p>
                         </div>
                         <div class="setting-control">
                           <div class="slider-wrapper">
@@ -680,11 +680,11 @@
                         </div>
                       </div>
 
-                      <!-- FAQ 分数加权 -->
+                      <!-- FAQ 분수 가중 -->
                       <div v-if="formData.config.faq_priority_enabled" class="setting-row">
                         <div class="setting-info">
-                          <label>FAQ 分数加权</label>
-                          <p class="desc">FAQ 结果的相关性分数乘以此系数，使其排序更靠前</p>
+                          <label>{{ $t('agent.editor.hints.faqScoreBoost') }}</label>
+                          <p class="desc">{{ $t('agent.editor.hints.faqScoreBoostDesc') }}</p>
                         </div>
                         <div class="setting-control">
                           <div class="slider-wrapper">
@@ -700,8 +700,8 @@
                 <!-- 网络搜索配置 -->
                 <div v-show="currentSection === 'websearch'" class="section">
                   <div class="section-header">
-                    <h2>{{ $t('agent.editor.webSearchConfig') || '网络搜索' }}</h2>
-                    <p class="section-description">{{ $t('agent.editor.webSearchConfigDesc') || '配置智能体的网络搜索能力' }}</p>
+                    <h2>{{ $t('agent.editor.webSearchConfig') }}</h2>
+                    <p class="section-description">{{ $t('agent.editor.webSearchConfigDesc') }}</p>
                   </div>
                   
                   <div class="settings-group">
@@ -709,7 +709,7 @@
                     <div class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.webSearch') }}</label>
-                        <p class="desc">启用后智能体可以搜索互联网获取信息</p>
+                        <p class="desc">{{ $t('agent.editor.hints.webSearchDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-switch v-model="formData.config.web_search_enabled" />
@@ -720,7 +720,7 @@
                     <div v-if="formData.config.web_search_enabled" class="setting-row">
                       <div class="setting-info">
                         <label>{{ $t('agent.editor.webSearchMaxResults') }}</label>
-                        <p class="desc">每次搜索返回的最大结果数量</p>
+                        <p class="desc">{{ $t('agent.editor.hints.webSearchMaxResultsDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <div class="slider-wrapper">
@@ -735,16 +735,16 @@
                 <!-- 检索策略（仅在有知识库能力时显示） -->
                 <div v-show="currentSection === 'retrieval' && hasKnowledgeBase" class="section">
                   <div class="section-header">
-                    <h2>{{ $t('agent.editor.retrievalStrategy') || '检索策略' }}</h2>
-                    <p class="section-description">配置知识库检索和排序的参数</p>
+                    <h2>{{ $t('agent.editor.retrievalStrategy') }}</h2>
+                    <p class="section-description">{{ $t('agent.editor.hints.retrievalStrategyDesc') }}</p>
                   </div>
                   
                   <div class="settings-group">
                     <!-- 查询扩展（仅普通模式） -->
                     <div v-if="!isAgentMode" class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.enableQueryExpansion') || '查询扩展' }}</label>
-                        <p class="desc">自动扩展查询词以提高召回率</p>
+                        <label>{{ $t('agent.editor.enableQueryExpansion') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.queryExpansionDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-switch v-model="formData.config.enable_query_expansion" />
@@ -754,8 +754,8 @@
                     <!-- 向量召回TopK -->
                     <div class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.embeddingTopK') || '向量召回数量' }}</label>
-                        <p class="desc">向量检索返回的最大结果数量</p>
+                        <label>{{ $t('agent.editor.embeddingTopK') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.embeddingTopKDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-input-number v-model="formData.config.embedding_top_k" :min="1" :max="50" theme="column" />
@@ -765,8 +765,8 @@
                     <!-- 关键词阈值 -->
                     <div class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.keywordThreshold') || '关键词阈值' }}</label>
-                        <p class="desc">关键词检索的最低相关性分数</p>
+                        <label>{{ $t('agent.editor.keywordThreshold') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.keywordThresholdDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <div class="slider-wrapper">
@@ -779,8 +779,8 @@
                     <!-- 向量阈值 -->
                     <div class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.vectorThreshold') || '向量阈值' }}</label>
-                        <p class="desc">向量检索的最低相似度分数</p>
+                        <label>{{ $t('agent.editor.vectorThreshold') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.vectorThresholdDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <div class="slider-wrapper">
@@ -793,8 +793,8 @@
                     <!-- 重排TopK -->
                     <div class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.rerankTopK') || '重排数量' }}</label>
-                        <p class="desc">重排序后保留的最大结果数量</p>
+                        <label>{{ $t('agent.editor.rerankTopK') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.rerankTopKDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <t-input-number v-model="formData.config.rerank_top_k" :min="1" :max="20" theme="column" />
@@ -804,8 +804,8 @@
                     <!-- 重排阈值 -->
                     <div class="setting-row">
                       <div class="setting-info">
-                        <label>{{ $t('agent.editor.rerankThreshold') || '重排阈值' }}</label>
-                        <p class="desc">重排序的最低相关性分数</p>
+                        <label>{{ $t('agent.editor.rerankThreshold') }}</label>
+                        <p class="desc">{{ $t('agent.editor.hints.rerankThresholdDesc') }}</p>
                       </div>
                       <div class="setting-control">
                         <div class="slider-wrapper">
@@ -819,13 +819,13 @@
                     <template v-if="!isAgentMode">
                       <div class="setting-row">
                         <div class="setting-info">
-                          <label>{{ $t('agent.editor.fallbackStrategy') || '兜底策略' }}</label>
-                          <p class="desc">当无法从知识库找到相关内容时的处理方式</p>
+                          <label>{{ $t('agent.editor.fallbackStrategy') }}</label>
+                          <p class="desc">{{ $t('agent.editor.hints.fallbackStrategyDesc') }}</p>
                         </div>
                         <div class="setting-control">
                           <t-radio-group v-model="formData.config.fallback_strategy">
-                            <t-radio-button value="fixed">固定回复</t-radio-button>
-                            <t-radio-button value="model">模型生成</t-radio-button>
+                            <t-radio-button value="fixed">{{ $t('agent.editor.hints.fixedReply') }}</t-radio-button>
+                            <t-radio-button value="model">{{ $t('agent.editor.hints.modelGenerated') }}</t-radio-button>
                           </t-radio-group>
                         </div>
                       </div>
@@ -833,14 +833,14 @@
                       <!-- 固定兜底回复 -->
                       <div v-if="formData.config.fallback_strategy === 'fixed'" class="setting-row setting-row-vertical">
                         <div class="setting-info">
-                          <label>{{ $t('agent.editor.fallbackResponse') || '固定回复内容' }}</label>
-                          <p class="desc">当无法回答时返回的固定文本</p>
+                          <label>{{ $t('agent.editor.fallbackResponse') }}</label>
+                          <p class="desc">{{ $t('agent.editor.hints.fallbackResponseDesc') }}</p>
                         </div>
                         <div class="setting-control setting-control-full">
                           <div class="textarea-with-template">
                             <t-textarea 
                               v-model="formData.config.fallback_response" 
-                              :placeholder="defaultFallbackResponse || $t('agent.editor.fallbackResponsePlaceholder') || '抱歉，我无法回答这个问题。'"
+                              :placeholder="defaultFallbackResponse || $t('agent.editor.fallbackResponsePlaceholder')"
                               :autosize="{ minRows: 2, maxRows: 6 }"
                             />
                             <PromptTemplateSelector 
@@ -855,23 +855,23 @@
                       <!-- 兜底提示词 -->
                       <div v-if="formData.config.fallback_strategy === 'model'" class="setting-row setting-row-vertical">
                         <div class="setting-info">
-                          <label>{{ $t('agent.editor.fallbackPrompt') || '兜底提示词' }}</label>
-                          <p class="desc">当无法从知识库找到答案时，引导模型生成回复的提示词</p>
+                          <label>{{ $t('agent.editor.fallbackPrompt') }}</label>
+                          <p class="desc">{{ $t('agent.editor.hints.fallbackPromptDesc') }}</p>
                           <div class="placeholder-tags" v-if="fallbackPlaceholders.length > 0">
-                            <span class="placeholder-label">可用变量：</span>
-                            <t-tooltip 
-                              v-for="placeholder in fallbackPlaceholders" 
+                            <span class="placeholder-label">{{ $t('agent.editor.hints.availableVariables') }}</span>
+                            <t-tooltip
+                              v-for="placeholder in fallbackPlaceholders"
                               :key="placeholder.name"
-                              :content="placeholder.description + '（点击插入）'"
+                              :content="placeholder.description + $t('agent.editor.hints.clickToInsert')"
                               placement="top"
                             >
-                              <span 
+                              <span
                                 class="placeholder-tag"
                                 @click="handlePlaceholderClick('fallback', placeholder.name)"
                                 v-text="'{{' + placeholder.name + '}}'"
                               ></span>
                             </t-tooltip>
-                            <span class="placeholder-hint" v-text="'（点击插入，或输入 {{ 唤起列表）'"></span>
+                            <span class="placeholder-hint">{{ $t('agent.editor.hints.clickToInsertHint') }}</span>
                           </div>
                         </div>
                         <div class="setting-control setting-control-full" style="position: relative;">
@@ -879,7 +879,7 @@
                             <t-textarea 
                               ref="fallbackPromptTextareaRef"
                               v-model="formData.config.fallback_prompt" 
-                              :placeholder="defaultFallbackPrompt || $t('agent.editor.fallbackPromptPlaceholder') || '留空使用系统默认提示词'"
+                              :placeholder="defaultFallbackPrompt || $t('agent.editor.fallbackPromptPlaceholder')"
                               :autosize="{ minRows: 4, maxRows: 10 }"
                               @input="handleFallbackPromptInput"
                             />
@@ -999,17 +999,17 @@ const kbSelectionMode = ref<'all' | 'selected' | 'none'>('none');
 // MCP 服务选择模式：all=全部, selected=指定, none=不使用
 const mcpSelectionMode = ref<'all' | 'selected' | 'none'>('none');
 
-// 可用工具列表 (与后台 definitions.go 保持一致)
-const allTools = [
-  { value: 'thinking', label: '思考', description: '动态和反思性的问题解决思考工具', requiresKB: false },
-  { value: 'todo_write', label: '制定计划', description: '创建结构化的研究计划', requiresKB: false },
-  { value: 'grep_chunks', label: '关键词搜索', description: '快速定位包含特定关键词的文档和分块', requiresKB: true },
-  { value: 'knowledge_search', label: '语义搜索', description: '理解问题并查找语义相关内容', requiresKB: true },
-  { value: 'list_knowledge_chunks', label: '查看文档分块', description: '获取文档完整分块内容', requiresKB: true },
-  { value: 'query_knowledge_graph', label: '查询知识图谱', description: '从知识图谱中查询关系', requiresKB: true },
-  { value: 'get_document_info', label: '获取文档信息', description: '查看文档元数据', requiresKB: true },
-  { value: 'database_query', label: '查询数据库', description: '查询数据库中的信息', requiresKB: true },
-];
+// Available tools list (sync with backend definitions.go)
+const allTools = computed(() => [
+  { value: 'thinking', label: t('agent.tools.thinking'), description: t('agent.tools.thinkingDesc'), requiresKB: false },
+  { value: 'todo_write', label: t('agent.tools.todoWrite'), description: t('agent.tools.todoWriteDesc'), requiresKB: false },
+  { value: 'grep_chunks', label: t('agent.tools.grepChunks'), description: t('agent.tools.grepChunksDesc'), requiresKB: true },
+  { value: 'knowledge_search', label: t('agent.tools.knowledgeSearch'), description: t('agent.tools.knowledgeSearchDesc'), requiresKB: true },
+  { value: 'list_knowledge_chunks', label: t('agent.tools.listKnowledgeChunks'), description: t('agent.tools.listKnowledgeChunksDesc'), requiresKB: true },
+  { value: 'query_knowledge_graph', label: t('agent.tools.queryKnowledgeGraph'), description: t('agent.tools.queryKnowledgeGraphDesc'), requiresKB: true },
+  { value: 'get_document_info', label: t('agent.tools.getDocumentInfo'), description: t('agent.tools.getDocumentInfoDesc'), requiresKB: true },
+  { value: 'database_query', label: t('agent.tools.databaseQuery'), description: t('agent.tools.databaseQueryDesc'), requiresKB: true },
+]);
 
 // 根据知识库配置动态计算是否有知识库能力
 const hasKnowledgeBase = computed(() => {
@@ -1029,7 +1029,7 @@ const hasFaqKnowledgeBase = computed(() => {
 });
 
 const availableTools = computed(() => {
-  return allTools.map(tool => ({
+  return allTools.value.map(tool => ({
     ...tool,
     disabled: tool.requiresKB && !hasKnowledgeBase.value
   }));
@@ -1114,21 +1114,16 @@ const navItems = computed(() => {
     { key: 'basic', icon: 'info-circle', label: t('agent.editor.basicInfo') },
     { key: 'model', icon: 'control-platform', label: t('agent.editor.modelConfig') },
   ];
-  // 知识库配置（放在工具上面）
-  items.push({ key: 'knowledge', icon: 'folder', label: t('agent.editor.knowledgeConfig') || '知识库' });
-  // Agent模式才显示工具配置
+  items.push({ key: 'knowledge', icon: 'folder', label: t('agent.editor.knowledgeConfig') });
   if (isAgentMode.value) {
-    items.push({ key: 'tools', icon: 'tools', label: t('agent.editor.toolsConfig') || '工具配置' });
+    items.push({ key: 'tools', icon: 'tools', label: t('agent.editor.toolsConfig') });
   }
-  // 有知识库能力时才显示检索策略
   if (hasKnowledgeBase.value) {
-    items.push({ key: 'retrieval', icon: 'search', label: t('agent.editor.retrievalStrategy') || '检索策略' });
+    items.push({ key: 'retrieval', icon: 'search', label: t('agent.editor.retrievalStrategy') });
   }
-  // 网络搜索（独立菜单）
-  items.push({ key: 'websearch', icon: 'internet', label: t('agent.editor.webSearchConfig') || '网络搜索' });
-  // 多轮对话（仅普通模式显示，Agent模式内部自动控制）
+  items.push({ key: 'websearch', icon: 'internet', label: t('agent.editor.webSearchConfig') });
   if (!isAgentMode.value) {
-    items.push({ key: 'conversation', icon: 'chat', label: t('agent.editor.conversationSettings') || '多轮对话' });
+    items.push({ key: 'conversation', icon: 'chat', label: t('agent.editor.conversationSettings') });
   }
   return items;
 });
@@ -2311,12 +2306,12 @@ const handleSave = async () => {
   if (!isAgentMode.value && hasKnowledgeBase.value) {
     const contextTemplate = formData.value.config.context_template || '';
     if (!hasPlaceholder(contextTemplate, 'contexts')) {
-      MessagePlugin.error(t('agent.editor.contextsMissing') || '开启知识库时，上下文模板必须包含 {{contexts}} 占位符');
+      MessagePlugin.error(t('agent.editor.contextsMissing'));
       currentSection.value = 'basic';
       return;
     }
     if (!hasPlaceholder(contextTemplate, 'query')) {
-      MessagePlugin.error(t('agent.editor.queryMissingInContext') || '上下文模板必须包含 {{query}} 占位符');
+      MessagePlugin.error(t('agent.editor.queryMissingInContext'));
       currentSection.value = 'basic';
       return;
     }
@@ -2326,7 +2321,7 @@ const handleSave = async () => {
   if (isAgentMode.value && hasKnowledgeBase.value) {
     const systemPrompt = formData.value.config.system_prompt || '';
     if (!hasPlaceholder(systemPrompt, 'knowledge_bases')) {
-      MessagePlugin.warning(t('agent.editor.knowledgeBasesMissing') || '建议在系统提示词中包含 {{knowledge_bases}} 占位符，以便模型了解可用的知识库');
+      MessagePlugin.warning(t('agent.editor.knowledgeBasesMissing'));
     }
   }
 
@@ -2336,12 +2331,12 @@ const handleSave = async () => {
     // 只有用户自定义了改写提示词时才校验
     if (rewritePrompt.trim()) {
       if (!hasPlaceholder(rewritePrompt, 'query')) {
-        MessagePlugin.error(t('agent.editor.queryMissingInRewrite') || '改写用户提示词必须包含 {{query}} 占位符');
+        MessagePlugin.error(t('agent.editor.queryMissingInRewrite'));
         currentSection.value = 'conversation';
         return;
       }
       if (!hasPlaceholder(rewritePrompt, 'conversation')) {
-        MessagePlugin.error(t('agent.editor.conversationMissing') || '改写用户提示词必须包含 {{conversation}} 占位符');
+        MessagePlugin.error(t('agent.editor.conversationMissing'));
         currentSection.value = 'conversation';
         return;
       }
@@ -2353,7 +2348,7 @@ const handleSave = async () => {
     const fallbackPrompt = formData.value.config.fallback_prompt || '';
     // 只有用户自定义了兜底提示词时才校验
     if (fallbackPrompt.trim() && !hasPlaceholder(fallbackPrompt, 'query')) {
-      MessagePlugin.error(t('agent.editor.queryMissingInFallback') || '兜底提示词必须包含 {{query}} 占位符');
+      MessagePlugin.error(t('agent.editor.queryMissingInFallback'));
       currentSection.value = 'retrieval';
       return;
     }
