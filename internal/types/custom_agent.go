@@ -224,8 +224,8 @@ func (a *CustomAgent) IsAgentMode() bool {
 func GetBuiltinQuickAnswerAgent(tenantID uint64) *CustomAgent {
 	return &CustomAgent{
 		ID:          BuiltinQuickAnswerID,
-		Name:        "빠른 Q&A",
-		Description: "지식베이스 기반 RAG Q&A, 빠르고 정확하게 질문에 답변합니다",
+		Name:        "Quick Q&A",
+		Description: "Knowledge base RAG Q&A - fast and accurate answers to your questions",
 		IsBuiltin:   true,
 		TenantID:    tenantID,
 		Config: CustomAgentConfig{
@@ -260,8 +260,8 @@ func GetBuiltinQuickAnswerAgent(tenantID uint64) *CustomAgent {
 func GetBuiltinSmartReasoningAgent(tenantID uint64) *CustomAgent {
 	return &CustomAgent{
 		ID:          BuiltinSmartReasoningID,
-		Name:        "스마트 추론",
-		Description: "ReAct 추론 프레임워크, 다단계 사고와 도구 호출을 지원합니다",
+		Name:        "Smart Reasoning",
+		Description: "ReAct reasoning framework - supports multi-step thinking and tool calling",
 		IsBuiltin:   true,
 		TenantID:    tenantID,
 		Config: CustomAgentConfig{
