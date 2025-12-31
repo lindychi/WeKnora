@@ -255,11 +255,17 @@ func loadLocalizedPrompts(configDir string) (*PromptsConfig, error) {
 	defaultFile := filepath.Join(promptsDir, "default.yaml")
 	if _, err := os.Stat(defaultFile); err == nil {
 		data, err := os.ReadFile(defaultFile)
-		if err == nil {
+		if err != nil {
+			// Log error but continue with default language - file exists but couldn't be read
+			fmt.Fprintf(os.Stderr, "Warning: failed to read %s: %v\n", defaultFile, err)
+		} else {
 			var defaultConfig struct {
 				DefaultLanguage string `yaml:"default_language"`
 			}
-			if yaml.Unmarshal(data, &defaultConfig) == nil && defaultConfig.DefaultLanguage != "" {
+			if err := yaml.Unmarshal(data, &defaultConfig); err != nil {
+				// Log parse error but continue with default language
+				fmt.Fprintf(os.Stderr, "Warning: failed to parse %s: %v\n", defaultFile, err)
+			} else if defaultConfig.DefaultLanguage != "" {
 				config.DefaultLanguage = defaultConfig.DefaultLanguage
 			}
 		}

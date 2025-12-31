@@ -155,13 +155,18 @@ export default function (knowledgeBaseId?: string) {
             source: data.source || '',
             file_type: data.file_type || ''
           });
+          // Only fetch detail content if main details loaded successfully
+          getfDetails(item.id, 1);
+        } else {
+          // Handle application-level failure (success=false)
+          console.warn('Failed to get knowledge details:', result.error || result.message);
+          MessagePlugin.error(t('common.loadFailed'));
         }
       })
       .catch((err) => {
         console.error('Failed to load knowledge details:', err);
         MessagePlugin.error(t('common.loadFailed'));
       });
-    getfDetails(item.id, 1);
   };
   
   const getfDetails = (id: string, page: number) => {
@@ -175,6 +180,10 @@ export default function (knowledgeBaseId?: string) {
             details.md.push(...data);
           }
           details.total = totalResult;
+        } else {
+          // Handle application-level failure (success=false)
+          console.warn('Failed to get knowledge detail content:', result.error || result.message);
+          MessagePlugin.error(t('common.loadFailed'));
         }
       })
       .catch((err) => {
