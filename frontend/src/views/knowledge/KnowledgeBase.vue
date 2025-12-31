@@ -221,7 +221,9 @@ const loadTags = async (kbIdValue: string, reset = false) => {
       tagPage.value = currentPage + 1;
     }
   } catch (error) {
-    console.error('Failed to load tags', error);
+    // Network/system errors are more severe than application-level failures
+    console.error('Failed to load tags:', error);
+    MessagePlugin.warning(t('common.loadFailed'));
   } finally {
     tagLoading.value = false;
     tagLoadingMore.value = false;
@@ -440,11 +442,13 @@ const loadKnowledgeList = async () => {
       type: item.type || 'document',
     }));
   } catch (error) {
+    // Network/system errors are more severe than application-level failures
     console.error('Failed to load knowledge list:', error);
+    MessagePlugin.warning(t('common.loadFailed'));
   }
 };
 
-// 监听路由参数变化，重新获取知识库内容
+// Watch route parameter changes, reload knowledge base content
 watch(() => kbId.value, (newKbId, oldKbId) => {
   if (newKbId && newKbId !== oldKbId) {
     tagSearchQuery.value = '';

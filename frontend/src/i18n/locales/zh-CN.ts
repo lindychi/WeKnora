@@ -738,6 +738,8 @@ export default {
     missingKbId: "知识库ID缺失",
     unsupportedFileType: "不支持的文件类型",
     untitledDocument: "未命名文档",
+    loadFailed: "加载失败",
+    operationFailed: "操作失败",
   },
   agent: {
     taskLabel: "任务:",

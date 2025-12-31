@@ -1006,6 +1006,7 @@ export default {
     unsupportedFileType: "지원하지 않는 파일 형식입니다",
     untitledDocument: "제목 없는 문서",
     loadFailed: "로드 실패",
+    operationFailed: "작업 실패",
   },
   file: {
     upload: "파일 업로드",

@@ -918,6 +918,8 @@ export default {
     missingKbId: 'Knowledge base ID is missing',
     unsupportedFileType: 'Unsupported file type',
     untitledDocument: 'Untitled Document',
+    loadFailed: 'Load failed',
+    operationFailed: 'Operation failed',
   },
   file: {
     upload: 'Upload File',
