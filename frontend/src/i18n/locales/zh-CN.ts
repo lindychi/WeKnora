@@ -235,6 +235,7 @@ export default {
     deepThoughtAlt: "深度思考完成",
     referencesTitle: "参考了{count}个相关内容",
     referenceIconAlt: "参考内容图标",
+    webSearchResult: "网页搜索结果",
     chunkIdLabel: "片段ID:",
     documentIdLabel: "文档ID:",
     noPlanSteps: "未提供具体步骤",

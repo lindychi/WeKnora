@@ -1535,7 +1535,11 @@ func (s *knowledgeService) getSummary(ctx context.Context,
 func (s *knowledgeService) enqueueQuestionGenerationTask(ctx context.Context,
 	kbID, knowledgeID string, questionCount int,
 ) {
-	tenantID := ctx.Value(types.TenantIDContextKey).(uint64)
+	tenantID, ok := ctx.Value(types.TenantIDContextKey).(uint64)
+	if !ok || tenantID == 0 {
+		logger.Errorf(ctx, "TenantID missing or invalid in context for question generation task, knowledgeID: %s", knowledgeID)
+		return
+	}
 	payload := types.QuestionGenerationPayload{
 		TenantID:        tenantID,
 		KnowledgeBaseID: kbID,
@@ -1562,7 +1566,11 @@ func (s *knowledgeService) enqueueQuestionGenerationTask(ctx context.Context,
 func (s *knowledgeService) enqueueSummaryGenerationTask(ctx context.Context,
 	kbID, knowledgeID string,
 ) {
-	tenantID := ctx.Value(types.TenantIDContextKey).(uint64)
+	tenantID, ok := ctx.Value(types.TenantIDContextKey).(uint64)
+	if !ok || tenantID == 0 {
+		logger.Errorf(ctx, "TenantID missing or invalid in context for summary generation task, knowledgeID: %s", knowledgeID)
+		return
+	}
 	payload := types.SummaryGenerationPayload{
 		TenantID:        tenantID,
 		KnowledgeBaseID: kbID,

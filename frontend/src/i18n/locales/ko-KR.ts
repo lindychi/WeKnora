@@ -234,6 +234,7 @@ export default {
     deepThoughtAlt: "심층 분석 완료",
     referencesTitle: "{count}개의 관련 내용 참조",
     referenceIconAlt: "참조 내용 아이콘",
+    webSearchResult: "웹 검색 결과",
     chunkIdLabel: "청크 ID:",
     documentIdLabel: "문서 ID:",
     noPlanSteps: "구체적인 단계가 제공되지 않았습니다",
@@ -1758,6 +1759,7 @@ export default {
   input: {
     addModel: "모델 추가",
     placeholder: "모델에 직접 질문",
+    placeholderAgent: "{name}에게 질문",
     placeholderWithContext: "질문을 입력하면 위에서 선택한 지식베이스/파일을 기반으로 답변합니다",
     placeholderWebOnly: "질문을 입력하면 웹 검색을 결합하여 답변합니다",
     placeholderKbAndWeb: "질문을 입력하면 지식베이스와 웹 검색을 기반으로 답변합니다",

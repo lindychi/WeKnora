@@ -41,8 +41,11 @@
 </template>
 <script setup>
 import { onMounted, defineProps, computed, ref, reactive } from "vue";
+import { useI18n } from 'vue-i18n';
 import { sanitizeHTML } from '@/utils/security';
 import ContentPopup from './tool-results/ContentPopup.vue';
+
+const { t } = useI18n();
 const props = defineProps({
     // 必填项
     content: {
@@ -98,7 +101,7 @@ const getWebSearchDisplayText = (item) => {
             return url;
         }
     }
-    return 'Web Search Result';
+    return t('chat.webSearchResult');
 };
 
 </script>

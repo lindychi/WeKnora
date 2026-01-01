@@ -50,7 +50,7 @@ type PromptsConfig struct {
 }
 
 // SupportedLanguages defines the supported language codes
-var SupportedLanguages = []string{"ko-KR", "en-US", "zh-CN"}
+var SupportedLanguages = []string{"ko-KR", "en-US", "zh-CN", "ru-RU"}
 
 // GetPrompts returns the prompts for the specified language, falling back to default
 func (pc *PromptsConfig) GetPrompts(lang string) *LocalizedPrompts {

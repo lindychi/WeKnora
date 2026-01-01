@@ -1420,6 +1420,7 @@ export default {
     deepThoughtAlt: 'Deep thinking finished',
     referencesTitle: 'Referenced {count} related item(s)',
     referenceIconAlt: 'Reference materials icon',
+    webSearchResult: 'Web Search Result',
     chunkIdLabel: 'Chunk ID:',
     documentIdLabel: 'Document ID:',
     noPlanSteps: 'No detailed steps provided',
