@@ -1,6 +1,7 @@
 export default {
   menu: {
     knowledgeBase: 'База знаний',
+    agents: 'Агенты',
     chat: 'Диалог',
     createChat: 'Создать диалог',
     tenant: 'Информация об аккаунте',

@@ -453,6 +453,7 @@ watch(() => kbId.value, (newKbId, oldKbId) => {
   if (newKbId && newKbId !== oldKbId) {
     tagSearchQuery.value = '';
     tagPage.value = 1;
+    pollFailureCount = 0; // Reset failure count on KB change
     loadKnowledgeBaseInfo(newKbId);
   }
 }, { immediate: false });
@@ -528,9 +529,10 @@ const handleOpenURLImportDialog = (event: CustomEvent) => {
 };
 
 onMounted(() => {
+  pollFailureCount = 0; // Reset failure count on mount
   loadKnowledgeBaseInfo(kbId.value);
   loadKnowledgeList();
-  
+
   // Listen for file upload events
   window.addEventListener('knowledgeFileUploaded', handleFileUploaded as EventListener);
   // Listen for URL import dialog open events
@@ -948,7 +950,7 @@ const getTitle = (session_id: string, value: string) => {
 async function createNewSession(value: string): Promise<void> {
   // Session is no longer bound to knowledge base, create session directly
   createSessions({}).then(res => {
-    if (res.success && res.data && res.data.id) {
+    if (res?.success && res.data?.id) {
       getTitle(res.data.id, value);
     } else {
       // Handle application-level failure
