@@ -138,7 +138,7 @@ func (h *Handler) setupStopEventHandler(
 	eventBus.On(event.EventStop, func(ctx context.Context, evt event.Event) error {
 		logger.Infof(ctx, "Received stop event, cancelling async operations for session: %s", sessionID)
 		cancel()
-		assistantMessage.Content = "用户停止了本次对话"
+		assistantMessage.Content = "[Conversation stopped by user]"
 		h.completeAssistantMessage(ctx, assistantMessage)
 		return nil
 	})
